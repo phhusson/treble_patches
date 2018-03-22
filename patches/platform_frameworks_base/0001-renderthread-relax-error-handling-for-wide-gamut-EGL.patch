@@ -1,0 +1,36 @@
+From 8aff32ec3106530d1ea81ba536cd548760bd4ded Mon Sep 17 00:00:00 2001
+From: Rob Herring <robh@kernel.org>
+Date: Wed, 29 Nov 2017 09:26:31 -0600
+Subject: [PATCH 1/3] renderthread: relax error handling for wide gamut EGL
+ configs
+
+It is valid to advertise EGL_EXT_pixel_format_float, but not have a
+the requested EGL config. Instead of aborting, fallback to the default
+behavior.
+
+Change-Id: I6c602233b627dc2070364434fece57d3d0aab435
+Cc: Romain Guy <romainguy@google.com>
+Signed-off-by: Rob Herring <robh@kernel.org>
+---
+ libs/hwui/renderthread/EglManager.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/libs/hwui/renderthread/EglManager.cpp b/libs/hwui/renderthread/EglManager.cpp
+index 16d77364942..bd4708da562 100644
+--- a/libs/hwui/renderthread/EglManager.cpp
++++ b/libs/hwui/renderthread/EglManager.cpp
+@@ -223,9 +223,9 @@ void EglManager::loadConfigs() {
+         numConfigs = 1;
+         if (!eglChooseConfig(mEglDisplay, attribs16F, &mEglConfigWideGamut, numConfigs, &numConfigs)
+                 || numConfigs != 1) {
+-            LOG_ALWAYS_FATAL(
+-                    "Device claims wide gamut support, cannot find matching config, error = %s",
++            ALOGE("Device claims wide gamut support, cannot find matching config, error = %s",
+                     eglErrorString());
++            EglExtensions.pixelFormatFloat = false;
+         }
+     }
+ }
+-- 
+2.15.1
+

@@ -1,0 +1,31 @@
+From 55bd603882486a351210d29ac7767d92f12000f2 Mon Sep 17 00:00:00 2001
+From: Steve Kondik <steve@cyngn.com>
+Date: Sat, 3 Jan 2015 05:13:26 -0800
+Subject: [PATCH 3/3] power: Disable keyboard/button lights while
+ dozing/dreaming
+
+ * With hardkeys and doze mode enabled, entering suspend results in
+   an epic battle over the lights. It's a bad situation. Disable
+   them when we're sleepy.
+
+Change-Id: I7f1fc35a1573717d1ea101a07c4171d6f66d1553
+---
+ services/core/java/com/android/server/power/PowerManagerService.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/services/core/java/com/android/server/power/PowerManagerService.java b/services/core/java/com/android/server/power/PowerManagerService.java
+index 1ced53fe840..9edf6fcae1e 100644
+--- a/services/core/java/com/android/server/power/PowerManagerService.java
++++ b/services/core/java/com/android/server/power/PowerManagerService.java
+@@ -1947,7 +1947,7 @@ public final class PowerManagerService extends SystemService
+                 final boolean userInactiveOverride = mUserInactiveOverrideFromWindowManager;
+ 
+                 mUserActivitySummary = 0;
+-                if (mLastUserActivityTime >= mLastWakeTime) {
++                if (mWakefulness == WAKEFULNESS_AWAKE && mLastUserActivityTime >= mLastWakeTime) {
+                     nextTimeout = mLastUserActivityTime
+                             + screenOffTimeout - screenDimDuration;
+                     if (now < nextTimeout) {
+-- 
+2.15.1
+
