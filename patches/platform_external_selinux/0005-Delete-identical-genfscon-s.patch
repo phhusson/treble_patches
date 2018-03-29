@@ -1,4 +1,4 @@
-From c334f823d0eccac2656ceceb707367680cca32f2 Mon Sep 17 00:00:00 2001
+From e1a73437cd00ffa6a8a7bd6f19ee68df52befac3 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Sat, 3 Mar 2018 19:02:29 +0100
 Subject: [PATCH 5/5] Delete identical genfscon-s
@@ -9,7 +9,7 @@ Change-Id: I9775187b9da3568390ab66ebd59cb774b1283ad1
  1 file changed, 11 insertions(+)
 
 diff --git a/libsepol/cil/src/cil_post.c b/libsepol/cil/src/cil_post.c
-index a30de0e1..605847d1 100644
+index a30de0e..de509ed 100644
 --- a/libsepol/cil/src/cil_post.c
 +++ b/libsepol/cil/src/cil_post.c
 @@ -53,6 +53,16 @@
@@ -23,7 +23,7 @@ index a30de0e1..605847d1 100644
 +		if(compar(a+i*len, a+j*len) != 0) j++;
 +		if(i != j) memcpy(a+j*len, a+i*len, len);
 +	}
-+	return j;
++	return j+1;
 +}
 +
  static int cil_verify_is_list(struct cil_list *list, enum cil_flavor flavor)
@@ -38,5 +38,5 @@ index a30de0e1..605847d1 100644
  	qsort(db->nodecon->array, db->nodecon->count, sizeof(db->nodecon->array), cil_post_nodecon_compare);
  	qsort(db->fsuse->array, db->fsuse->count, sizeof(db->fsuse->array), cil_post_fsuse_compare);
 -- 
-2.15.1
+2.7.4
 
