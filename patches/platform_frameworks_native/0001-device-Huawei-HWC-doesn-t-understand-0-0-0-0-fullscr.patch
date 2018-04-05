@@ -18,7 +18,7 @@ This fixes several UI glitches, most notably GBoard.
  3 files changed, 44 insertions(+), 1 deletion(-)
 
 diff --git a/services/surfaceflinger/Layer.cpp b/services/surfaceflinger/Layer.cpp
-index 038ece2e0..8099f1d3c 100755
+index 038ece2..8099f1d 100755
 --- a/services/surfaceflinger/Layer.cpp
 +++ b/services/surfaceflinger/Layer.cpp
 @@ -871,7 +871,40 @@ void Layer::setPerFrameData(const sp<const DisplayDevice>& displayDevice) {
@@ -64,7 +64,7 @@ index 038ece2e0..8099f1d3c 100755
          ALOGE("[%s] Failed to set surface damage: %s (%d)", mName.string(),
                  to_string(error).c_str(), static_cast<int32_t>(error));
 diff --git a/services/surfaceflinger/SurfaceFlinger.cpp b/services/surfaceflinger/SurfaceFlinger.cpp
-index 4055693e4..3f806b71c 100644
+index 4055693..3f806b7 100644
 --- a/services/surfaceflinger/SurfaceFlinger.cpp
 +++ b/services/surfaceflinger/SurfaceFlinger.cpp
 @@ -247,6 +247,13 @@ SurfaceFlinger::SurfaceFlinger()
@@ -82,7 +82,7 @@ index 4055693e4..3f806b71c 100644
  
  void SurfaceFlinger::onFirstRef()
 diff --git a/services/surfaceflinger/SurfaceFlinger.h b/services/surfaceflinger/SurfaceFlinger.h
-index 99d4a1a63..c888b1dcd 100644
+index 99d4a1a..c888b1d 100644
 --- a/services/surfaceflinger/SurfaceFlinger.h
 +++ b/services/surfaceflinger/SurfaceFlinger.h
 @@ -727,6 +727,9 @@ private:
@@ -96,5 +96,5 @@ index 99d4a1a63..c888b1dcd 100644
      mutable MessageQueue mEventQueue;
      FrameTracker mAnimFrameTracker;
 -- 
-2.15.1
+2.7.4
 

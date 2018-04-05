@@ -32,7 +32,7 @@ Signed-off-by: James Carter <jwcart2@tycho.nsa.gov>
  6 files changed, 9 insertions(+), 6 deletions(-)
 
 diff --git a/libsepol/cil/src/cil.c b/libsepol/cil/src/cil.c
-index e8bbbfdf..a5a3e263 100644
+index e8bbbfd..a5a3e26 100644
 --- a/libsepol/cil/src/cil.c
 +++ b/libsepol/cil/src/cil.c
 @@ -2038,6 +2038,7 @@ void cil_typeattribute_init(struct cil_typeattribute **attr)
@@ -44,7 +44,7 @@ index e8bbbfdf..a5a3e263 100644
  
  void cil_typeattributeset_init(struct cil_typeattributeset **attrset)
 diff --git a/libsepol/cil/src/cil_binary.c b/libsepol/cil/src/cil_binary.c
-index e1481a43..1818ffa9 100644
+index e1481a4..1818ffa 100644
 --- a/libsepol/cil/src/cil_binary.c
 +++ b/libsepol/cil/src/cil_binary.c
 @@ -567,7 +567,7 @@ int cil_typeattribute_to_policydb(policydb_t *pdb, struct cil_typeattribute *cil
@@ -84,7 +84,7 @@ index e1481a43..1818ffa9 100644
  					}
  				}
 diff --git a/libsepol/cil/src/cil_internal.h b/libsepol/cil/src/cil_internal.h
-index abfacd8d..942b28f0 100644
+index abfacd8..942b28f 100644
 --- a/libsepol/cil/src/cil_internal.h
 +++ b/libsepol/cil/src/cil_internal.h
 @@ -527,6 +527,7 @@ struct cil_typeattribute {
@@ -96,7 +96,7 @@ index abfacd8d..942b28f0 100644
  
  struct cil_typeattributeset {
 diff --git a/libsepol/cil/src/cil_policy.c b/libsepol/cil/src/cil_policy.c
-index 77179e63..3e511330 100644
+index 77179e6..3e51133 100644
 --- a/libsepol/cil/src/cil_policy.c
 +++ b/libsepol/cil/src/cil_policy.c
 @@ -1085,7 +1085,7 @@ static void cil_typeattributes_to_policy(FILE *out, struct cil_list *types, stru
@@ -109,7 +109,7 @@ index 77179e63..3e511330 100644
  			if (ebitmap_get_bit(attribute->types, type->value)) {
  				if (first) {
 diff --git a/libsepol/cil/src/cil_post.c b/libsepol/cil/src/cil_post.c
-index 1941fab3..a30de0e1 100644
+index 1941fab..a30de0e 100644
 --- a/libsepol/cil/src/cil_post.c
 +++ b/libsepol/cil/src/cil_post.c
 @@ -1250,7 +1250,7 @@ static int __cil_post_db_attr_helper(struct cil_tree_node *node, uint32_t *finis
@@ -122,7 +122,7 @@ index 1941fab3..a30de0e1 100644
  	}
  	case CIL_ROLEATTRIBUTE: {
 diff --git a/libsepol/cil/src/cil_reset_ast.c b/libsepol/cil/src/cil_reset_ast.c
-index 676e156e..142179ee 100644
+index 676e156..142179e 100644
 --- a/libsepol/cil/src/cil_reset_ast.c
 +++ b/libsepol/cil/src/cil_reset_ast.c
 @@ -186,6 +186,7 @@ static void cil_reset_typeattr(struct cil_typeattribute *attr)
@@ -134,5 +134,5 @@ index 676e156e..142179ee 100644
  
  static void cil_reset_typeattributeset(struct cil_typeattributeset *tas)
 -- 
-2.15.1
+2.7.4
 

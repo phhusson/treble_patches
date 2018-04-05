@@ -25,7 +25,7 @@ Signed-off-by: James Carter <jwcart2@tycho.nsa.gov>
  6 files changed, 57 insertions(+), 8 deletions(-)
 
 diff --git a/libsepol/cil/include/cil/cil.h b/libsepol/cil/include/cil/cil.h
-index 4507892c..4df646a0 100644
+index 4507892..4df646a 100644
 --- a/libsepol/cil/include/cil/cil.h
 +++ b/libsepol/cil/include/cil/cil.h
 @@ -46,6 +46,7 @@ extern int cil_userprefixes_to_string(cil_db_t *db, char **out, size_t *size);
@@ -37,7 +37,7 @@ index 4507892c..4df646a0 100644
  extern void cil_set_preserve_tunables(cil_db_t *db, int preserve_tunables);
  extern int cil_set_handle_unknown(cil_db_t *db, int handle_unknown);
 diff --git a/libsepol/cil/src/cil.c b/libsepol/cil/src/cil.c
-index 9b9ccc36..e8bbbfdf 100644
+index 9b9ccc3..e8bbbfd 100644
 --- a/libsepol/cil/src/cil.c
 +++ b/libsepol/cil/src/cil.c
 @@ -1675,6 +1675,11 @@ void cil_set_mls(struct cil_db *db, int mls)
@@ -53,7 +53,7 @@ index 9b9ccc36..e8bbbfdf 100644
  {
  	db->target_platform = target_platform;
 diff --git a/libsepol/cil/src/cil_build_ast.c b/libsepol/cil/src/cil_build_ast.c
-index 36cc6735..9a10e7ab 100644
+index 36cc673..9a10e7a 100644
 --- a/libsepol/cil/src/cil_build_ast.c
 +++ b/libsepol/cil/src/cil_build_ast.c
 @@ -82,10 +82,33 @@ exit:
@@ -125,7 +125,7 @@ index 36cc6735..9a10e7ab 100644
  	}
  
 diff --git a/libsepol/cil/src/cil_internal.h b/libsepol/cil/src/cil_internal.h
-index aee3f00c..abfacd8d 100644
+index aee3f00..abfacd8 100644
 --- a/libsepol/cil/src/cil_internal.h
 +++ b/libsepol/cil/src/cil_internal.h
 @@ -312,6 +312,7 @@ struct cil_db {
@@ -137,7 +137,7 @@ index aee3f00c..abfacd8d 100644
  	int policy_version;
  };
 diff --git a/libsepol/src/libsepol.map.in b/libsepol/src/libsepol.map.in
-index 40426408..edd98d5a 100644
+index 4042640..edd98d5 100644
 --- a/libsepol/src/libsepol.map.in
 +++ b/libsepol/src/libsepol.map.in
 @@ -47,6 +47,7 @@ LIBSEPOL_1.1 {
@@ -149,7 +149,7 @@ index 40426408..edd98d5a 100644
  	sepol_ppfile_to_module_package;
  	sepol_module_package_to_cil;
 diff --git a/secilc/secilc.c b/secilc/secilc.c
-index f2232e72..0be6975b 100644
+index f2232e7..0be6975 100644
 --- a/secilc/secilc.c
 +++ b/secilc/secilc.c
 @@ -63,6 +63,7 @@ static __attribute__((__noreturn__)) void usage(const char *prog)
@@ -204,5 +204,5 @@ index f2232e72..0be6975b 100644
  	cil_set_preserve_tunables(db, preserve_tunables);
  	if (handle_unknown != -1) {
 -- 
-2.15.1
+2.7.4
 

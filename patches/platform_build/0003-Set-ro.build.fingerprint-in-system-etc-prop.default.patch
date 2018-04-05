@@ -1,14 +1,14 @@
-From 98a31a76008d682563273b8196668b57c1b6ff14 Mon Sep 17 00:00:00 2001
+From ed63e5f22b143b683b0d96393d4758f61bfec9ef Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Mon, 5 Mar 2018 22:27:50 +0100
-Subject: [PATCH 3/3] Set ro.build.fingerprint in system/etc/prop.default
+Subject: [PATCH 3/4] Set ro.build.fingerprint in system/etc/prop.default
 
 ---
  core/Makefile | 1 +
  1 file changed, 1 insertion(+)
 
 diff --git a/core/Makefile b/core/Makefile
-index 77a817cd5..e0f0e9145 100644
+index 77a817c..e0f0e91 100644
 --- a/core/Makefile
 +++ b/core/Makefile
 @@ -116,6 +116,7 @@ $(INSTALLED_DEFAULT_PROP_TARGET): $(intermediate_system_build_prop)
@@ -20,5 +20,5 @@ index 77a817cd5..e0f0e9145 100644
  ifdef property_overrides_split_enabled
  	$(hide) mkdir -p $(TARGET_ROOT_OUT)
 -- 
-2.15.1
+2.7.4
 

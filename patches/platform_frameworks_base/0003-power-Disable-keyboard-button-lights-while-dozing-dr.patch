@@ -1,7 +1,7 @@
-From 55bd603882486a351210d29ac7767d92f12000f2 Mon Sep 17 00:00:00 2001
+From 0ac1c80ec58bee78a6240a197c68975b284e984c Mon Sep 17 00:00:00 2001
 From: Steve Kondik <steve@cyngn.com>
 Date: Sat, 3 Jan 2015 05:13:26 -0800
-Subject: [PATCH 3/3] power: Disable keyboard/button lights while
+Subject: [PATCH 3/6] power: Disable keyboard/button lights while
  dozing/dreaming
 
  * With hardkeys and doze mode enabled, entering suspend results in
@@ -14,7 +14,7 @@ Change-Id: I7f1fc35a1573717d1ea101a07c4171d6f66d1553
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/services/core/java/com/android/server/power/PowerManagerService.java b/services/core/java/com/android/server/power/PowerManagerService.java
-index 1ced53fe840..9edf6fcae1e 100644
+index 1ced53f..9edf6fc 100644
 --- a/services/core/java/com/android/server/power/PowerManagerService.java
 +++ b/services/core/java/com/android/server/power/PowerManagerService.java
 @@ -1947,7 +1947,7 @@ public final class PowerManagerService extends SystemService
@@ -27,5 +27,5 @@ index 1ced53fe840..9edf6fcae1e 100644
                              + screenOffTimeout - screenDimDuration;
                      if (now < nextTimeout) {
 -- 
-2.15.1
+2.7.4
 
