@@ -13,7 +13,7 @@ On Huawei devices, do the plane conversion.
 This fixes several UI glitches, most notably GBoard.
 ---
  services/surfaceflinger/Layer.cpp          | 35 +++++++++++++++++++++++++++++-
- services/surfaceflinger/SurfaceFlinger.cpp |  7 ++++++
+ services/surfaceflinger/SurfaceFlinger.cpp |  8 ++++++++
  services/surfaceflinger/SurfaceFlinger.h   |  3 +++
  3 files changed, 44 insertions(+), 1 deletion(-)
 
@@ -75,6 +75,7 @@ index 4055693e4..3f806b71c 100644
 +    if(strstr(value, "hi3660")||
 +		    strstr(value, "hi6250") ||
 +		    strstr(value, "hi3670") ||
++		    strstr(value, "hi3650") ||
 +		    strstr(value, "kirin970")) {
 +	    mDamageUsesScreenReference = true;
 +    }
