@@ -1,7 +1,7 @@
-From 84e5d0e45c211c4e5e22acfea523ede244d34911 Mon Sep 17 00:00:00 2001
+From 27d2bdb06e56d2656b8714f51841b24956031e1f Mon Sep 17 00:00:00 2001
 From: Jaekyun Seok <jaekyun@google.com>
 Date: Fri, 3 Nov 2017 15:33:10 +0900
-Subject: [PATCH 2/3] Move ART default properties into system partition
+Subject: [PATCH 2/5] Move ART default properties into system partition
 
 Bug: 64661857
 Bug: 68755013
@@ -15,7 +15,7 @@ Change-Id: Ie07d3049de5ac395cfb9105e208fe7825080fa15
  2 files changed, 7 insertions(+), 5 deletions(-)
 
 diff --git a/core/dex_preopt_libart.mk b/core/dex_preopt_libart.mk
-index 96160367b..15cb221b6 100644
+index 9616036..15cb221 100644
 --- a/core/dex_preopt_libart.mk
 +++ b/core/dex_preopt_libart.mk
 @@ -30,7 +30,9 @@ DIRTY_IMAGE_OBJECTS := $(call word-colon,1,$(firstword \
@@ -30,7 +30,7 @@ index 96160367b..15cb221b6 100644
  
  DEX2OAT_IMAGE_XMS := $(call get-product-default-property,dalvik.vm.image-dex2oat-Xms)
 diff --git a/target/product/runtime_libart.mk b/target/product/runtime_libart.mk
-index 8aedee79c..f1b8f4596 100644
+index 8aedee7..f1b8f45 100644
 --- a/target/product/runtime_libart.mk
 +++ b/target/product/runtime_libart.mk
 @@ -56,7 +56,7 @@ PRODUCT_PACKAGES += art-tools
@@ -63,5 +63,5 @@ index 8aedee79c..f1b8f4596 100644
      pm.dexopt.bg-dexopt=speed-profile \
      pm.dexopt.ab-ota=speed-profile \
 -- 
-2.15.1
+2.7.4
 

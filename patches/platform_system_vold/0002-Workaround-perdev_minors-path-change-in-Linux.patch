@@ -1,4 +1,4 @@
-From 2f89ac71e213bfbd45d503ef615b778697ef8dc2 Mon Sep 17 00:00:00 2001
+From 3723c1420678f60f5a996758df295ae9a2a2a339 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@archos.com>
 Date: Tue, 28 Nov 2017 15:42:56 +0100
 Subject: [PATCH 2/2] Workaround perdev_minors path change in Linux
@@ -38,5 +38,5 @@ index 9c22400..2f6ed5e 100644
              return -errno;
          }
 -- 
-2.15.1
+2.7.4
 

@@ -1,4 +1,4 @@
-From d0bf750d9e6796cc7fec9763ed496eac17981524 Mon Sep 17 00:00:00 2001
+From ee971dbb9ae4a9f9ad4c8c713dfe1097e91a848d Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Tue, 1 May 2018 22:52:09 +0200
 Subject: [PATCH] HACK: Support sepolicy vndk 26

@@ -1,7 +1,7 @@
-From d1cd1dbf69b4cb6c0046255c8015c58b10a90165 Mon Sep 17 00:00:00 2001
+From d3387afb71aa27a42ce143ae8e378b0ebfefef62 Mon Sep 17 00:00:00 2001
 From: Ricardo Cerqueira <cyanogenmod@cerqueira.org>
 Date: Fri, 23 Nov 2012 14:23:16 +0000
-Subject: [PATCH 2/3] Reintroduce button-backlight (and respective inactivity
+Subject: [PATCH 02/11] Reintroduce button-backlight (and respective inactivity
  timeout)
 
 The power manager rewrite from Change I1d7a52e98f0449f76d70bf421f6a7f245957d1d7
@@ -19,7 +19,7 @@ Change-Id: I6094c446e0b8c23f57d30652a3cbd35dee5e821a
  2 files changed, 21 insertions(+)
 
 diff --git a/services/core/java/com/android/server/display/DisplayPowerController.java b/services/core/java/com/android/server/display/DisplayPowerController.java
-index f8e58362e7a..80bdf1ffade 100644
+index f8e5836..80bdf1f 100644
 --- a/services/core/java/com/android/server/display/DisplayPowerController.java
 +++ b/services/core/java/com/android/server/display/DisplayPowerController.java
 @@ -20,6 +20,7 @@ import android.app.ActivityManager;
@@ -62,7 +62,7 @@ index f8e58362e7a..80bdf1ffade 100644
  
          // Configure auto-brightness.
 diff --git a/services/core/java/com/android/server/power/PowerManagerService.java b/services/core/java/com/android/server/power/PowerManagerService.java
-index f84b20c0570..1ced53fe840 100644
+index f84b20c..1ced53f 100644
 --- a/services/core/java/com/android/server/power/PowerManagerService.java
 +++ b/services/core/java/com/android/server/power/PowerManagerService.java
 @@ -220,6 +220,8 @@ public final class PowerManagerService extends SystemService
@@ -104,5 +104,5 @@ index f84b20c0570..1ced53fe840 100644
                      } else {
                          nextTimeout = mLastUserActivityTime + screenOffTimeout;
 -- 
-2.15.1
+2.7.4
 
