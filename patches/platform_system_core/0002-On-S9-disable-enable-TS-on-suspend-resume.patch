@@ -1,0 +1,103 @@
+From 849b729e175fb847bf0e497e772cffeb2b4795de Mon Sep 17 00:00:00 2001
+From: Pierre-Hugues Husson <phh@phh.me>
+Date: Sat, 26 May 2018 12:15:54 +0200
+Subject: [PATCH 2/2] On S9/+, disable/enable TS on suspend/resume
+
+---
+ libsuspend/autosuspend_wakeup_count.c | 58 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 58 insertions(+)
+
+diff --git a/libsuspend/autosuspend_wakeup_count.c b/libsuspend/autosuspend_wakeup_count.c
+index 2da204a..4cdbb18 100644
+--- a/libsuspend/autosuspend_wakeup_count.c
++++ b/libsuspend/autosuspend_wakeup_count.c
+@@ -28,6 +28,8 @@
+ #include <sys/stat.h>
+ #include <sys/types.h>
+ #include <unistd.h>
++#include <stdio.h>
++#include <cutils/properties.h>
+ 
+ #include <log/log.h>
+ 
+@@ -55,14 +57,61 @@ static void update_sleep_time(bool success) {
+     sleep_time = MIN(sleep_time * 2, 60000000);
+ }
+ 
++const char* samsung_touchscreen_readname(const char* path) {
++	char fullPath[PATH_MAX];
++	sprintf(fullPath, "%s/name", path);
++	int fd = open(fullPath, O_RDONLY);
++	
++	static char name[1024] = "unknown";
++	int len = read(fd, name, sizeof(name));
++	if(len == -1)
++		strcpy(name, "unknown");
++	else
++		name[len] = 0;
++	close(fd);
++	return name;
++}
++
++static int samsung_touchscreen_enabled_fd() {
++	int fd = -1;
++	for(int i=0; i<30; i++) {
++		char path[1024];
++		sprintf(path, "/sys/class/input/input%d", i);
++		const char* name = samsung_touchscreen_readname(path);
++		if(strcmp(name, "sec_touchscreen") == 0 ||
++				strcmp(name, "sec_touchscreen\n") == 0) {
++			char fullPath[PATH_MAX];
++			sprintf(fullPath, "%s/enabled", path);
++			fd = open(fullPath, O_RDWR);
++			if(fd == -1)
++				ALOGE("Got error %s", strerror(errno));
++		}
++	}
++	return fd;
++}
++
++static int samsung_touchscreen_set(int enable) {
++	int fd;
++        fd = samsung_touchscreen_enabled_fd();
++	if(fd == -1) return 0;
++	if(write(fd, enable ? "1" : "0", 1) == -1) return 0;
++	close(fd);
++	return 1;
++}
++
+ static void *suspend_thread_func(void *arg __attribute__((unused)))
+ {
++    char prop[PROPERTY_VALUE_MAX];
+     char buf[80];
+     char wakeup_count[20];
+     int wakeup_count_len;
+     int ret;
+     bool success = true;
+ 
++    property_get("ro.hardware", prop, "toto");
++    //bool samsungTs = strstr(prop, "samsungexynos9810") != NULL;
++    bool samsungTs = true;
++
+     while (1) {
+         update_sleep_time(success);
+         usleep(sleep_time);
+@@ -99,6 +148,15 @@ static void *suspend_thread_func(void *arg __attribute__((unused)))
+             ALOGV("%s: write %s to %s\n", __func__, sleep_state, SYS_POWER_STATE);
+             ret = TEMP_FAILURE_RETRY(write(state_fd, sleep_state, strlen(sleep_state)));
+             if (ret >= 0) {
++		    if(samsungTs) {
++			    ALOGE("Resetting Samsung TS");
++			    samsung_touchscreen_set(0);
++			    int ret = 0;
++			    for(int i=0; i< 10 && !ret; i++) {
++				    ret = samsung_touchscreen_set(1);
++			    ALOGE("Resetting Samsung TS: try %d", i);
++				}
++			}
+                 success = true;
+             }
+             void (*func)(bool success) = wakeup_func;
+-- 
+2.7.4
+

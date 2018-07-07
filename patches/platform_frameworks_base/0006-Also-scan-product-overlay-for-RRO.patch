@@ -1,0 +1,51 @@
+From 1fef41d82a1e7a2bbafebcf519a60c888ffd3c4b Mon Sep 17 00:00:00 2001
+From: Pierre-Hugues Husson <pierre-hugues.husson@softathome.com>
+Date: Tue, 24 Apr 2018 18:08:59 +0200
+Subject: [PATCH 06/16] Also scan /product/overlay for RRO
+
+---
+ core/jni/android_util_AssetManager.cpp | 6 +++++-
+ core/jni/fd_utils.cpp                  | 3 ++-
+ 2 files changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/core/jni/android_util_AssetManager.cpp b/core/jni/android_util_AssetManager.cpp
+index b137da3..30d8abe 100644
+--- a/core/jni/android_util_AssetManager.cpp
++++ b/core/jni/android_util_AssetManager.cpp
+@@ -164,7 +164,7 @@ static void verifySystemIdmaps()
+                 }
+ 
+                 // Generic idmap parameters
+-                const char* argv[8];
++                const char* argv[9];
+                 int argc = 0;
+                 struct stat st;
+ 
+@@ -189,6 +189,10 @@ static void verifySystemIdmaps()
+                     argv[argc++] = AssetManager::OVERLAY_DIR;
+                 }
+ 
++               if (stat("/product/overlay/", &st) == 0) {
++                   argv[argc++] = "/product/overlay";
++               }
++
+                 // Finally, invoke idmap (if any overlay directory exists)
+                 if (argc > 5) {
+                     execv(AssetManager::IDMAP_BIN, (char* const*)argv);
+diff --git a/core/jni/fd_utils.cpp b/core/jni/fd_utils.cpp
+index 956b724..496b140 100644
+--- a/core/jni/fd_utils.cpp
++++ b/core/jni/fd_utils.cpp
+@@ -89,7 +89,8 @@ bool FileDescriptorWhitelist::IsAllowed(const std::string& path) const {
+ 
+   if ((android::base::StartsWith(path, kOverlayDir)
+        || android::base::StartsWith(path, kOverlaySubdir)
+-       || android::base::StartsWith(path, kVendorOverlayDir))
++       || android::base::StartsWith(path, kVendorOverlayDir)
++       || android::base::StartsWith(path, "/product/overlay"))
+       && android::base::EndsWith(path, kApkSuffix)
+       && path.find("/../") == std::string::npos) {
+     return true;
+-- 
+2.7.4
+

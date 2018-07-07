@@ -1,0 +1,26 @@
+From ee971dbb9ae4a9f9ad4c8c713dfe1097e91a848d Mon Sep 17 00:00:00 2001
+From: Pierre-Hugues Husson <phh@phh.me>
+Date: Tue, 1 May 2018 22:52:09 +0200
+Subject: [PATCH 1/2] HACK: Support sepolicy vndk 26
+
+Change-Id: I715a7fffb98ac0cf9d01768362bed0b95afcb687
+---
+ assemble_vintf.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/assemble_vintf.cpp b/assemble_vintf.cpp
+index 974c7fc..69d1d27 100644
+--- a/assemble_vintf.cpp
++++ b/assemble_vintf.cpp
+@@ -266,7 +266,7 @@ class AssembleVintf {
+             }
+ 
+             matrix->framework.mSepolicy =
+-                Sepolicy(kernelSepolicyVers, {{sepolicyVers.majorVer, sepolicyVers.minorVer}});
++                Sepolicy(kernelSepolicyVers, {{sepolicyVers.majorVer, sepolicyVers.minorVer}, { 26, 0}});
+ 
+             Version avbMetaVersion;
+             if (!getFlag("FRAMEWORK_VBMETA_VERSION", &avbMetaVersion)) {
+-- 
+2.7.4
+

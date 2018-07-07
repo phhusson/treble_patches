@@ -1,0 +1,51 @@
+From e89aed22785fc3ce5aa0bd75c6410003dbc55245 Mon Sep 17 00:00:00 2001
+From: Pierre-Hugues Husson <phh@phh.me>
+Date: Tue, 1 May 2018 17:47:36 +0200
+Subject: [PATCH 07/16] Also scan /system/overlay
+
+---
+ core/jni/android_util_AssetManager.cpp | 6 +++++-
+ core/jni/fd_utils.cpp                  | 3 ++-
+ 2 files changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/core/jni/android_util_AssetManager.cpp b/core/jni/android_util_AssetManager.cpp
+index 30d8abe..9ec1a75 100644
+--- a/core/jni/android_util_AssetManager.cpp
++++ b/core/jni/android_util_AssetManager.cpp
+@@ -164,7 +164,7 @@ static void verifySystemIdmaps()
+                 }
+ 
+                 // Generic idmap parameters
+-                const char* argv[9];
++                const char* argv[10];
+                 int argc = 0;
+                 struct stat st;
+ 
+@@ -193,6 +193,10 @@ static void verifySystemIdmaps()
+                    argv[argc++] = "/product/overlay";
+                }
+ 
++               if (stat("/system/overlay/", &st) == 0) {
++                   argv[argc++] = "/system/overlay";
++               }
++
+                 // Finally, invoke idmap (if any overlay directory exists)
+                 if (argc > 5) {
+                     execv(AssetManager::IDMAP_BIN, (char* const*)argv);
+diff --git a/core/jni/fd_utils.cpp b/core/jni/fd_utils.cpp
+index 496b140..6ba3798 100644
+--- a/core/jni/fd_utils.cpp
++++ b/core/jni/fd_utils.cpp
+@@ -90,7 +90,8 @@ bool FileDescriptorWhitelist::IsAllowed(const std::string& path) const {
+   if ((android::base::StartsWith(path, kOverlayDir)
+        || android::base::StartsWith(path, kOverlaySubdir)
+        || android::base::StartsWith(path, kVendorOverlayDir)
+-       || android::base::StartsWith(path, "/product/overlay"))
++       || android::base::StartsWith(path, "/product/overlay")
++       || android::base::StartsWith(path, "/system/overlay"))
+       && android::base::EndsWith(path, kApkSuffix)
+       && path.find("/../") == std::string::npos) {
+     return true;
+-- 
+2.7.4
+
