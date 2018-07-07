@@ -1,7 +1,7 @@
-From 95e4257c052e310ca30b4a06458703bf24292c73 Mon Sep 17 00:00:00 2001
+From 1fef41d82a1e7a2bbafebcf519a60c888ffd3c4b Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <pierre-hugues.husson@softathome.com>
 Date: Tue, 24 Apr 2018 18:08:59 +0200
-Subject: [PATCH 06/11] Also scan /product/overlay for RRO
+Subject: [PATCH 06/16] Also scan /product/overlay for RRO
 
 ---
  core/jni/android_util_AssetManager.cpp | 6 +++++-

@@ -1,0 +1,25 @@
+From 98c42d9a0f3bee91b8ff4715e00ab28db4cc26b3 Mon Sep 17 00:00:00 2001
+From: Pierre-Hugues Husson <phh@phh.me>
+Date: Sun, 10 Jun 2018 23:23:31 +0200
+Subject: [PATCH 2/2] Say we support AVB 1.0
+
+Change-Id: Ica39d42e7b5fc78bc476c413a97a1c488da51fa8
+---
+ parse_xml.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/parse_xml.cpp b/parse_xml.cpp
+index 0094f81..5a6d7fa 100644
+--- a/parse_xml.cpp
++++ b/parse_xml.cpp
+@@ -862,6 +862,7 @@ struct CompatibilityMatrixConverter : public XmlNodeConverter<CompatibilityMatri
+             appendChildren(root, matrixKernelConverter, m.framework.mKernels, d);
+             appendChild(root, sepolicyConverter(m.framework.mSepolicy, d));
+             appendChild(root, avbConverter(m.framework.mAvbMetaVersion, d));
++            appendChild(root, avbConverter({1, 0}, d));
+         } else if (m.mType == SchemaType::DEVICE) {
+             appendChild(root, vndkConverter(m.device.mVndk, d));
+         }
+-- 
+2.7.4
+

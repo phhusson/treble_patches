@@ -1,4 +1,4 @@
-From ecbca1fed51fb8d32a1025af4cf113072f9ac116 Mon Sep 17 00:00:00 2001
+From 048f3495d2dd64d681b5fe3a41dfde07b9b25c3f Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Fri, 5 Jan 2018 00:26:38 +0100
 Subject: [PATCH] [device] ::Huawei:: HWC doesn't understand 0,0,0,0 ==

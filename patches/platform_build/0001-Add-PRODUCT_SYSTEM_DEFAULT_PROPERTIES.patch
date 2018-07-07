@@ -1,4 +1,4 @@
-From b353255a2e69faf38aa785572e82e91ba180e31f Mon Sep 17 00:00:00 2001
+From 4d21147c438cd6c5dc61db0493b0f3ad7a62ad52 Mon Sep 17 00:00:00 2001
 From: Jaekyun Seok <jaekyun@google.com>
 Date: Fri, 3 Nov 2017 15:18:55 +0900
 Subject: [PATCH 1/5] Add PRODUCT_SYSTEM_DEFAULT_PROPERTIES

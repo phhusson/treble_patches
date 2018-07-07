@@ -1,0 +1,29 @@
+From aef5c4c70702bfd952e037f0e8242522fa1e42b7 Mon Sep 17 00:00:00 2001
+From: Pierre-Hugues Husson <phh@phh.me>
+Date: Mon, 2 Jul 2018 22:01:43 +0200
+Subject: [PATCH] [device] ::Huawei Kirin 960:: accept broken rpfilter match
+
+How bad a security flaw is this?
+People lived with rpfilter on IPv4 for a very long time...
+
+Change-Id: I9aa63d18e54a8254133adf97bf757c03d6b66757
+---
+ server/NatController.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/server/NatController.cpp b/server/NatController.cpp
+index 58c732d..d270dd3 100644
+--- a/server/NatController.cpp
++++ b/server/NatController.cpp
+@@ -205,7 +205,7 @@ int NatController::setForwardRules(bool add, const char *intIface, const char *e
+         "*raw\n"
+         "%s %s -i %s -m rpfilter --invert ! -s fe80::/64 -j DROP\n"
+         "COMMIT\n", op, LOCAL_RAW_PREROUTING, intIface);
+-    if (iptablesRestoreFunction(V6, rpfilterCmd) == -1 && add) {
++    if (iptablesRestoreFunction(V6, rpfilterCmd) == -1 && add && false) {
+         return -1;
+     }
+ 
+-- 
+2.7.4
+

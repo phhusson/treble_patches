@@ -1,4 +1,4 @@
-From e5fb3671280d478a69e669d3a79c2910149aaa6e Mon Sep 17 00:00:00 2001
+From bd8caaee0957ebc074eea9520cab310e7711244e Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Mon, 5 Mar 2018 22:27:50 +0100
 Subject: [PATCH 3/5] Set ro.build.fingerprint in system/etc/prop.default

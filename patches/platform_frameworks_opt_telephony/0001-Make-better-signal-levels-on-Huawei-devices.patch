@@ -1,4 +1,4 @@
-From b940363519226e190c1b51a925bc747c0083db38 Mon Sep 17 00:00:00 2001
+From 5585d35cee6b6776c291b9e0f40132eee8bb2db0 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Sat, 14 Apr 2018 15:53:15 +0200
 Subject: [PATCH] Make better signal levels on Huawei devices

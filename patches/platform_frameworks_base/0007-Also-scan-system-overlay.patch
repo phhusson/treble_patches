@@ -1,7 +1,7 @@
-From 62b2ee2cc00453fd15297c7ba755592c51715329 Mon Sep 17 00:00:00 2001
+From e89aed22785fc3ce5aa0bd75c6410003dbc55245 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Tue, 1 May 2018 17:47:36 +0200
-Subject: [PATCH 07/11] Also scan /system/overlay
+Subject: [PATCH 07/16] Also scan /system/overlay
 
 ---
  core/jni/android_util_AssetManager.cpp | 6 +++++-

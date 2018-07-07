@@ -1,7 +1,7 @@
-From 4ddb57c8dab6abb7f563bd7560af652031f6649b Mon Sep 17 00:00:00 2001
+From 90b1f32b2e4bbc22ee9dbbf586a804639fbe90f4 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Wed, 30 May 2018 14:05:30 +0200
-Subject: [PATCH 09/11] Fix(?) #62
+Subject: [PATCH 09/16] Fix(?) #62
 
 ---
  .../SystemUI/src/com/android/keyguard/KeyguardUpdateMonitor.java     | 5 ++++-
