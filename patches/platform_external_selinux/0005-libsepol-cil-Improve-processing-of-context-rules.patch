@@ -1,7 +1,7 @@
 From 9b009c3354946ec04c60b87d344ed2abbe63c4ba Mon Sep 17 00:00:00 2001
 From: James Carter <jwcart2@tycho.nsa.gov>
 Date: Thu, 29 Mar 2018 16:06:49 -0400
-Subject: [PATCH 5/5] libsepol/cil: Improve processing of context rules
+Subject: [PATCH 5/6] libsepol/cil: Improve processing of context rules
 
 Improve the processing of netifcon, genfscon, ibpkeycon, ibendportcon,
 portcon, nodecon, fsuse, filecon, iomemcon, ioportcon, pcidevicecon,

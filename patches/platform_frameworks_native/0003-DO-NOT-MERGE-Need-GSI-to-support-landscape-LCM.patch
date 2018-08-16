@@ -1,0 +1,186 @@
+From b5d1f6e7f0db39ddd35f4b95e67f987f4205781c Mon Sep 17 00:00:00 2001
+From: Iris Chang <iris.chang@mediatek.com>
+Date: Mon, 25 Dec 2017 13:19:03 +0800
+Subject: [PATCH 3/3] DO NOT MERGE: Need GSI to support landscape LCM
+
+When device uses landscape LCM, the nature of the screen shows that
+the device is a portrait device. After we flash with GSI, there is
+vendor solution for landscape LCM used at portrait device. As the
+result, the screen displays landscape layout and orientation while
+device is at portrait orientation. In addition, the sensor coordinate
+system mismatches with android coordinate system.
+
+We suggest Google can add config to handle the case "portrait device
+uses landscape LCM or landscape device uses portrait LCM".
+
+Bug: 69691076
+
+Test: We verified following test cases for this patch.
+1. Make sure homescreen is normal
+2. Rotate device and make sure screen is normal
+3. Grab screen shot and check if screen shot is normal
+4. Connect to Wi-Fi display and make sure WFD screen is normal
+
+Change-Id: I6675e2a39b03c99ae9fab145fde3cd4eda639564
+(cherry picked from 8686db3b5f5b6107a65abba2ab1e1bc4b7e1fe8d)
+---
+ services/surfaceflinger/DisplayDevice.cpp  |  9 +++++
+ services/surfaceflinger/SurfaceFlinger.cpp | 65 +++++++++++++++++++++++++++++-
+ services/surfaceflinger/SurfaceFlinger.h   |  6 +++
+ 3 files changed, 78 insertions(+), 2 deletions(-)
+
+diff --git a/services/surfaceflinger/DisplayDevice.cpp b/services/surfaceflinger/DisplayDevice.cpp
+index b28c9ba..75e0f2b 100644
+--- a/services/surfaceflinger/DisplayDevice.cpp
++++ b/services/surfaceflinger/DisplayDevice.cpp
+@@ -574,6 +574,15 @@ void DisplayDevice::setProjection(int orientation,
+     TL.set(-src_x, -src_y);
+     TP.set(dst_x, dst_y);
+ 
++    // need to take care of HW rotation for mGlobalTransform
++    // for case if the panel is not installed align with device orientation
++    if (mType == DisplayType::DISPLAY_PRIMARY) {
++        int hw_orient = mFlinger->getHwOrientation();
++        DisplayDevice::orientationToTransfrom(
++                (orientation + hw_orient) % (DisplayState::eOrientation270 + 1),
++                w, h, &R);
++    }
++
+     // The viewport and frame are both in the logical orientation.
+     // Apply the logical translation, scale to physical size, apply the
+     // physical translation and finally rotate to the physical orientation.
+diff --git a/services/surfaceflinger/SurfaceFlinger.cpp b/services/surfaceflinger/SurfaceFlinger.cpp
+index 3f806b7..6559f63 100644
+--- a/services/surfaceflinger/SurfaceFlinger.cpp
++++ b/services/surfaceflinger/SurfaceFlinger.cpp
+@@ -243,6 +243,9 @@ SurfaceFlinger::SurfaceFlinger()
+     mLayerTripleBufferingDisabled = atoi(value);
+     ALOGI_IF(mLayerTripleBufferingDisabled, "Disabling Triple Buffering");
+ 
++    int32_t hwrotation = property_get_int32("ro.sf.hwrotation", 0);
++    mHwOrientation = hwrotation / 90;
++
+     // We should be reading 'persist.sys.sf.color_saturation' here
+     // but since /data may be encrypted, we need to wait until after vold
+     // comes online to attempt to read the property. The property is
+@@ -825,6 +828,11 @@ status_t SurfaceFlinger::getDisplayConfigs(const sp<IBinder>& display,
+         // All non-virtual displays are currently considered secure.
+         info.secure = true;
+ 
++        if (DisplayDevice::DISPLAY_PRIMARY == type &&
++            mHwOrientation & DisplayState::eOrientationSwapMask) {
++            std::swap(info.w, info.h);
++        }
++
+         configs->push_back(info);
+     }
+ 
+@@ -4160,11 +4168,16 @@ void SurfaceFlinger::repaintEverything() {
+ // if they are set to 0
+ static status_t updateDimensionsLocked(const sp<const DisplayDevice>& displayDevice,
+                                        Transform::orientation_flags rotation,
+-                                       uint32_t* requestedWidth, uint32_t* requestedHeight) {
++                                       uint32_t* requestedWidth, uint32_t* requestedHeight,
++                                       int hwOrientation) {
+     // get screen geometry
+     uint32_t displayWidth = displayDevice->getWidth();
+     uint32_t displayHeight = displayDevice->getHeight();
+ 
++    if (hwOrientation & DisplayState::eOrientationSwapMask) {
++        std::swap(displayWidth, displayHeight);
++    }
++
+     if (rotation & Transform::ROT_90) {
+         std::swap(displayWidth, displayHeight);
+     }
+@@ -4274,7 +4287,7 @@ status_t SurfaceFlinger::captureScreen(const sp<IBinder>& display,
+     { // Autolock scope
+         Mutex::Autolock lock(mStateLock);
+         sp<const DisplayDevice> displayDevice(getDisplayDeviceLocked(display));
+-        updateDimensionsLocked(displayDevice, rotationFlags, &reqWidth, &reqHeight);
++        updateDimensionsLocked(displayDevice, rotationFlags, &reqWidth, &reqHeight, mHwOrientation);
+     }
+ 
+     // create a surface (because we're a producer, and we need to
+@@ -4384,6 +4397,23 @@ void SurfaceFlinger::renderScreenImplLocked(
+             !sourceCrop.isValid()) {
+         sourceCrop.setLeftTop(Point(0, 0));
+         sourceCrop.setRightBottom(Point(hw_w, hw_h));
++    } else if (hw->getDisplayType() == DisplayDevice::DISPLAY_PRIMARY &&
++            mHwOrientation != DisplayState::eOrientationDefault) {
++        Transform tr;
++        uint32_t flags = 0x00;
++        switch (mHwOrientation) {
++            case DisplayState::eOrientation90:
++                flags = Transform::ROT_90;
++                break;
++            case DisplayState::eOrientation180:
++                flags = Transform::ROT_180;
++                break;
++            case DisplayState::eOrientation270:
++                flags = Transform::ROT_270;
++                break;
++        }
++        tr.set(flags, hw->getWidth(), hw->getHeight());
++        sourceCrop = tr.transform(sourceCrop);
+     }
+ 
+     // ensure that sourceCrop is inside screen
+@@ -4408,6 +4438,37 @@ void SurfaceFlinger::renderScreenImplLocked(
+     // make sure to clear all GL error flags
+     engine.checkErrors();
+ 
++    if (hw->getDisplayType() == DisplayDevice::DISPLAY_PRIMARY &&
++        mHwOrientation != DisplayState::eOrientationDefault) {
++        // convert hw orientation into flag presentation
++        // here inverse transform needed
++        uint8_t hw_rot_90  = 0x00;
++        uint8_t hw_flip_hv = 0x00;
++        switch (mHwOrientation) {
++            case DisplayState::eOrientation90:
++                hw_rot_90 = Transform::ROT_90;
++                hw_flip_hv = Transform::ROT_180;
++                break;
++            case DisplayState::eOrientation180:
++                hw_flip_hv = Transform::ROT_180;
++                break;
++            case DisplayState::eOrientation270:
++                hw_rot_90  = Transform::ROT_90;
++                break;
++        }
++
++        // transform flags operation
++        // 1) flip H V if both have ROT_90 flag
++        // 2) XOR these flags
++        uint8_t rotation_rot_90  = rotation & Transform::ROT_90;
++        uint8_t rotation_flip_hv = rotation & Transform::ROT_180;
++        if (rotation_rot_90 & hw_rot_90) {
++            rotation_flip_hv = (~rotation_flip_hv) & Transform::ROT_180;
++        }
++        rotation = static_cast<Transform::orientation_flags>
++                   ((rotation_rot_90 ^ hw_rot_90) | (rotation_flip_hv ^ hw_flip_hv));
++    }
++
+     // set-up our viewport
+     engine.setViewportAndProjection(
+         reqWidth, reqHeight, sourceCrop, hw_h, yswap, rotation);
+diff --git a/services/surfaceflinger/SurfaceFlinger.h b/services/surfaceflinger/SurfaceFlinger.h
+index c888b1d..0bd60f6 100644
+--- a/services/surfaceflinger/SurfaceFlinger.h
++++ b/services/surfaceflinger/SurfaceFlinger.h
+@@ -821,6 +821,12 @@ private:
+ 
+     float mSaturation = 1.0f;
+     bool mForceNativeColorMode = false;
++
++public:
++    int getHwOrientation() { return mHwOrientation; }
++private:
++    // for phyical panel orientation info
++    int mHwOrientation;
+ };
+ }; // namespace android
+ 
+-- 
+2.7.4
+

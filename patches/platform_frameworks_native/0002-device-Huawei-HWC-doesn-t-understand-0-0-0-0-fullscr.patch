@@ -1,7 +1,7 @@
-From 6dcb8fda3d94def017ffce6f5540e88c29b1c3a4 Mon Sep 17 00:00:00 2001
+From b7b2deb69b84c74aa57712dc563a2dc8b91e0f42 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Fri, 5 Jan 2018 00:26:38 +0100
-Subject: [PATCH] [device] ::Huawei:: HWC doesn't understand 0,0,0,0 ==
+Subject: [PATCH 2/3] [device] ::Huawei:: HWC doesn't understand 0,0,0,0 ==
  fullscreen damage. Set it to the whole visible surface
 
 ::Huawei:: Fix damage for Huawei compositor

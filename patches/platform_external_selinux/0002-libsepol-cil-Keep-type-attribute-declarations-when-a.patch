@@ -1,7 +1,7 @@
 From 0a0c8e77b3a55c70ef55cd78aa5c2a4bce5b0862 Mon Sep 17 00:00:00 2001
 From: Dan Cashman <dcashman@google.com>
 Date: Wed, 11 Oct 2017 12:59:43 -0700
-Subject: [PATCH 2/5] libsepol: cil: Keep type[attribute] declarations when
+Subject: [PATCH 2/6] libsepol: cil: Keep type[attribute] declarations when
  attributizing.
 
 cil_android_attributize() uses a source policy to identify types and

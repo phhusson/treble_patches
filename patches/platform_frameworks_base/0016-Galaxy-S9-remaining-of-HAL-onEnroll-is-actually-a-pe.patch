@@ -1,7 +1,7 @@
-From 352a0b282645b142c4a57fd165e35b39602953b9 Mon Sep 17 00:00:00 2001
+From 3aeabfe4274b5015f88ed01a043605f6f82afae0 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Mon, 2 Jul 2018 23:36:39 +0200
-Subject: [PATCH 16/16] [Galaxy S9] "remaining" of HAL onEnroll is actually a
+Subject: [PATCH 16/18] [Galaxy S9] "remaining" of HAL onEnroll is actually a
  percent of progress
 
 ---

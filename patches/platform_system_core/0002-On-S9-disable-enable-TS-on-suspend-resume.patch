@@ -1,4 +1,4 @@
-From 849b729e175fb847bf0e497e772cffeb2b4795de Mon Sep 17 00:00:00 2001
+From d8c2997a75c5fbc3356b8b0a9029b535c7fde46e Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Sat, 26 May 2018 12:15:54 +0200
 Subject: [PATCH 2/2] On S9/+, disable/enable TS on suspend/resume

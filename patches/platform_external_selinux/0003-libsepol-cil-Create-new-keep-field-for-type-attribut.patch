@@ -1,7 +1,7 @@
 From 92fac49b74a4d83bd07b086e35f3e7dfe84fd429 Mon Sep 17 00:00:00 2001
 From: James Carter <jwcart2@tycho.nsa.gov>
 Date: Fri, 17 Nov 2017 08:09:52 -0500
-Subject: [PATCH 3/5] libsepol/cil: Create new keep field for type attribute
+Subject: [PATCH 3/6] libsepol/cil: Create new keep field for type attribute
  sets
 
 Daniel Cashman <dcashman@android.com> discovered the following:

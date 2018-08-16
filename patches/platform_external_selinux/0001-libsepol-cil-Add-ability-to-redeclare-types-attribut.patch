@@ -1,7 +1,7 @@
 From be352c253dffb5c0d952fbeef905c3269853b7e0 Mon Sep 17 00:00:00 2001
 From: Dan Cashman <dcashman@android.com>
 Date: Tue, 29 Aug 2017 09:32:05 -0700
-Subject: [PATCH 1/5] libsepol: cil: Add ability to redeclare types[attributes]
+Subject: [PATCH 1/6] libsepol: cil: Add ability to redeclare types[attributes]
 
 Modify cil_gen_node() to check to see if the cil_db supports multiple
 declarations, and if so, to check whether or not the

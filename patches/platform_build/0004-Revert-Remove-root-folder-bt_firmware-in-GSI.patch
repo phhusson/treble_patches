@@ -1,7 +1,7 @@
-From b1fd47b99f06d78d728ace3c57d5c9bade5e4831 Mon Sep 17 00:00:00 2001
+From 62bbe7eb535ac8ce012093cfa065178275ca7e05 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Tue, 27 Mar 2018 23:26:49 +0200
-Subject: [PATCH 4/4] Revert "Remove root folder bt_firmware in GSI"
+Subject: [PATCH 4/5] Revert "Remove root folder bt_firmware in GSI"
 
 This reverts commit 292b8433cb48ef4ceb2330e57e11b8f644d9d1ee.
 

@@ -1,0 +1,31 @@
+From 6501e925a96c06e177f63f444d18cd8be5fd1582 Mon Sep 17 00:00:00 2001
+From: Pierre-Hugues Husson <phh@phh.me>
+Date: Mon, 6 Aug 2018 19:59:43 +0200
+Subject: [PATCH 3/3] Set OpenKirin signal level meter to be activated on
+ property
+
+---
+ src/java/com/android/internal/telephony/RIL.java | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/src/java/com/android/internal/telephony/RIL.java b/src/java/com/android/internal/telephony/RIL.java
+index 00e69f9..9902bf9 100644
+--- a/src/java/com/android/internal/telephony/RIL.java
++++ b/src/java/com/android/internal/telephony/RIL.java
+@@ -5188,11 +5188,10 @@ public final class RIL extends BaseCommands implements CommandsInterface {
+     static SignalStrength convertHalSignalStrength(
+             android.hardware.radio.V1_0.SignalStrength signalStrength) {
+ 
+-	    String hardware = android.os.SystemProperties.get("ro.hardware", "");
+-        if(hardware.contains("hi3660") || hardware.contains("hi6250") || hardware.contains("hi3670") || hardware.contains("hi3650") || hardware.contains("kirin"))
++        String method = android.os.SystemProperties.get("persist.sys.signal.level", "default");
++        if("openkirin".equals(method))
+             return convertHalSignalStrengthHuawei(signalStrength);
+ 
+-
+         return new SignalStrength(signalStrength.gw.signalStrength,
+                 signalStrength.gw.bitErrorRate,
+                 signalStrength.cdma.dbm,
+-- 
+2.7.4
+

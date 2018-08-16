@@ -1,0 +1,26 @@
+From d5ab1eed1c037369c8c18726e7dbcc22b2c013ab Mon Sep 17 00:00:00 2001
+From: sanshu <linxiaoji89@gmail.com>
+Date: Fri, 6 Jul 2018 08:22:38 +0800
+Subject: [PATCH 2/3] add hi3650
+
+add kirin950
+---
+ src/java/com/android/internal/telephony/RIL.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/java/com/android/internal/telephony/RIL.java b/src/java/com/android/internal/telephony/RIL.java
+index 5392ca2..00e69f9 100644
+--- a/src/java/com/android/internal/telephony/RIL.java
++++ b/src/java/com/android/internal/telephony/RIL.java
+@@ -5189,7 +5189,7 @@ public final class RIL extends BaseCommands implements CommandsInterface {
+             android.hardware.radio.V1_0.SignalStrength signalStrength) {
+ 
+ 	    String hardware = android.os.SystemProperties.get("ro.hardware", "");
+-        if(hardware.contains("hi3660") || hardware.contains("hi6250") || hardware.contains("hi3670") || hardware.contains("kirin"))
++        if(hardware.contains("hi3660") || hardware.contains("hi6250") || hardware.contains("hi3670") || hardware.contains("hi3650") || hardware.contains("kirin"))
+             return convertHalSignalStrengthHuawei(signalStrength);
+ 
+ 
+-- 
+2.7.4
+

@@ -1,7 +1,7 @@
-From edcb0cb74c66637f34746dbcc7f35d6c268dc56e Mon Sep 17 00:00:00 2001
+From ffefaf356bddfbdc0b5e0368c50e228e50399e3c Mon Sep 17 00:00:00 2001
 From: Jaekyun Seok <jaekyun@google.com>
 Date: Fri, 3 Nov 2017 15:33:10 +0900
-Subject: [PATCH 2/4] Move ART default properties into system partition
+Subject: [PATCH 2/5] Move ART default properties into system partition
 
 Bug: 64661857
 Bug: 68755013

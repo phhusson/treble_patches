@@ -1,7 +1,7 @@
-From e0717a868052ab839ad0b589ca7cb869df5ad43f Mon Sep 17 00:00:00 2001
+From aa7cec925669fa644bb31164f96a51e0a57e0db2 Mon Sep 17 00:00:00 2001
 From: Jaekyun Seok <jaekyun@google.com>
 Date: Fri, 3 Nov 2017 15:18:55 +0900
-Subject: [PATCH 1/4] Add PRODUCT_SYSTEM_DEFAULT_PROPERTIES
+Subject: [PATCH 1/5] Add PRODUCT_SYSTEM_DEFAULT_PROPERTIES
 
 PRODUCT_SYSTEM_DEFAULT_PROPERTIES will be used to define system default
 properties which should be installed in system partition.
