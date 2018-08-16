@@ -1,4 +1,4 @@
-From da3ae66d974a7466d5ce32ab48e9f12e4c9e10aa Mon Sep 17 00:00:00 2001
+From 57c6e53977aac1ce4d5406ca5725cf2dbe36b073 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Mon, 2 Jul 2018 23:37:33 +0200
 Subject: [PATCH 5/5] Shorten build id
@@ -8,15 +8,15 @@ Subject: [PATCH 5/5] Shorten build id
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/core/build_id.mk b/core/build_id.mk
-index 973767d..0f7cdef 100644
+index 2d75f37..a2a2a69 100644
 --- a/core/build_id.mk
 +++ b/core/build_id.mk
 @@ -18,4 +18,4 @@
  # (like "CRB01").  It must be a single word, and is
  # capitalized by convention.
  
--export BUILD_ID=OPM2.171026.006.H1
-+export BUILD_ID=OPM2.171026
+-export BUILD_ID=OPM6.171019.030.H1
++export BUILD_ID=OPM6.171019
 -- 
 2.7.4
 
