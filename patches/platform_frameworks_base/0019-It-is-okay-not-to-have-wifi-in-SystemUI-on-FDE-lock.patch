@@ -1,0 +1,54 @@
+From bfa2cabcbae2e6b67acda5fad79e98104f66b915 Mon Sep 17 00:00:00 2001
+From: Pierre-Hugues Husson <phh@phh.me>
+Date: Mon, 20 Aug 2018 22:27:02 +0200
+Subject: [PATCH 19/19] It is okay not to have wifi in SystemUI (on FDE lock)
+
+---
+ .../SettingsLib/src/com/android/settingslib/wifi/WifiTracker.java     | 2 +-
+ .../com/android/systemui/statusbar/policy/HotspotControllerImpl.java  | 1 +
+ .../com/android/systemui/statusbar/policy/WifiSignalController.java   | 4 +++-
+ 3 files changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/packages/SettingsLib/src/com/android/settingslib/wifi/WifiTracker.java b/packages/SettingsLib/src/com/android/settingslib/wifi/WifiTracker.java
+index d8f0886..76cd70d 100644
+--- a/packages/SettingsLib/src/com/android/settingslib/wifi/WifiTracker.java
++++ b/packages/SettingsLib/src/com/android/settingslib/wifi/WifiTracker.java
+@@ -207,7 +207,7 @@ public class WifiTracker implements LifecycleObserver, OnStart, OnStop, OnDestro
+         mConnectivityManager = connectivityManager;
+ 
+         // check if verbose logging developer option has been turned on or off
+-        sVerboseLogging = (mWifiManager.getVerboseLoggingLevel() > 0);
++        sVerboseLogging = mWifiManager != null ? (mWifiManager.getVerboseLoggingLevel() > 0) : false;
+ 
+         mFilter = filter;
+ 
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/policy/HotspotControllerImpl.java b/packages/SystemUI/src/com/android/systemui/statusbar/policy/HotspotControllerImpl.java
+index d6d0673..07db5f8 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/policy/HotspotControllerImpl.java
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/policy/HotspotControllerImpl.java
+@@ -113,6 +113,7 @@ public class HotspotControllerImpl implements HotspotController, WifiManager.Sof
+      */
+     private void updateWifiStateListeners(boolean shouldListen) {
+         mWifiStateReceiver.setListening(shouldListen);
++        if(mWifiManager == null) return;
+         if (shouldListen) {
+             mWifiManager.registerSoftApCallback(
+                     this,
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/policy/WifiSignalController.java b/packages/SystemUI/src/com/android/systemui/statusbar/policy/WifiSignalController.java
+index e5e576d..78b3050 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/policy/WifiSignalController.java
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/policy/WifiSignalController.java
+@@ -59,7 +59,9 @@ public class WifiSignalController extends
+         mHasMobileData = hasMobileData;
+         Handler handler = new WifiHandler(Looper.getMainLooper());
+         mWifiChannel = new AsyncChannel();
+-        Messenger wifiMessenger = wifiManager.getWifiServiceMessenger();
++        Messenger wifiMessenger = null;
++        if(wifiManager != null)
++            wifiMessenger = wifiManager.getWifiServiceMessenger();
+         if (wifiMessenger != null) {
+             mWifiChannel.connect(context, handler, wifiMessenger);
+         }
+-- 
+2.7.4
+

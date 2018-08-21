@@ -1,0 +1,37 @@
+From ba947f13165df3081572a680009157bfb0827752 Mon Sep 17 00:00:00 2001
+From: Pierre-Hugues Husson <phh@phh.me>
+Date: Wed, 15 Aug 2018 12:27:21 +0200
+Subject: [PATCH 2/2] Relax /proc read from ueventd, huawei needs it
+
+---
+ prebuilts/api/28.0/private/domain.te | 1 +
+ private/domain.te                    | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/prebuilts/api/28.0/private/domain.te b/prebuilts/api/28.0/private/domain.te
+index fb6ba4f..95f0dbc 100644
+--- a/prebuilts/api/28.0/private/domain.te
++++ b/prebuilts/api/28.0/private/domain.te
+@@ -32,6 +32,7 @@ full_treble_only(`
+   # /proc
+   neverallow {
+     coredomain
++    -ueventd
+     -vold
+   } proc:file no_rw_file_perms;
+ 
+diff --git a/private/domain.te b/private/domain.te
+index fb6ba4f..95f0dbc 100644
+--- a/private/domain.te
++++ b/private/domain.te
+@@ -32,6 +32,7 @@ full_treble_only(`
+   # /proc
+   neverallow {
+     coredomain
++    -ueventd
+     -vold
+   } proc:file no_rw_file_perms;
+ 
+-- 
+2.7.4
+

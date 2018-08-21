@@ -1,7 +1,7 @@
-From b1fd47b99f06d78d728ace3c57d5c9bade5e4831 Mon Sep 17 00:00:00 2001
+From 363cac7dd03a359471d7aa97d7f5d8a8bcba5e11 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Tue, 27 Mar 2018 23:26:49 +0200
-Subject: [PATCH 4/4] Revert "Remove root folder bt_firmware in GSI"
+Subject: [PATCH 1/2] Revert "Remove root folder bt_firmware in GSI"
 
 This reverts commit 292b8433cb48ef4ceb2330e57e11b8f644d9d1ee.
 
@@ -13,7 +13,7 @@ Essential 8.1 firmware requires this
  3 files changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/target/board/generic_arm64_ab/BoardConfig.mk b/target/board/generic_arm64_ab/BoardConfig.mk
-index 6744289..d7b9979 100644
+index fc6b582..8200196 100644
 --- a/target/board/generic_arm64_ab/BoardConfig.mk
 +++ b/target/board/generic_arm64_ab/BoardConfig.mk
 @@ -33,7 +33,7 @@ TARGET_NO_RECOVERY := true
@@ -24,7 +24,7 @@ index 6744289..d7b9979 100644
 +BOARD_ROOT_EXTRA_FOLDERS += bt_firmware firmware firmware/radio persist
  BOARD_ROOT_EXTRA_SYMLINKS := /vendor/lib/dsp:/dsp
  
- # TODO(b/36764215): remove this setting when the generic system image
+ # Set this to create /cache mount point for non-A/B devices that mounts /cache.
 diff --git a/target/board/generic_arm64_ab/sepolicy/file.te b/target/board/generic_arm64_ab/sepolicy/file.te
 index 7adfdfa..4645533 100644
 --- a/target/board/generic_arm64_ab/sepolicy/file.te

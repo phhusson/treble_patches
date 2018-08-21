@@ -1,0 +1,28 @@
+From a04735c181e6212d3a31c47e7b984163a5df0a70 Mon Sep 17 00:00:00 2001
+From: Pierre-Hugues Husson <phh@phh.me>
+Date: Mon, 20 Aug 2018 22:39:39 +0200
+Subject: [PATCH 2/2] Allow LocaleTracker to work even if wifi is not up (FDE)
+
+Change-Id: Ie6a83af047bfcefb2588a9f6e31ac64e76c070a8
+---
+ src/java/com/android/internal/telephony/LocaleTracker.java | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/java/com/android/internal/telephony/LocaleTracker.java b/src/java/com/android/internal/telephony/LocaleTracker.java
+index 996e288..263d7e5 100644
+--- a/src/java/com/android/internal/telephony/LocaleTracker.java
++++ b/src/java/com/android/internal/telephony/LocaleTracker.java
+@@ -408,8 +408,8 @@ public class LocaleTracker extends Handler {
+             // Set the country code for wifi. This sets allowed wifi channels based on the
+             // country of the carrier we see. If we can't see any, reset to 0 so we don't
+             // broadcast on forbidden channels.
+-            ((WifiManager) mPhone.getContext().getSystemService(Context.WIFI_SERVICE))
+-                    .setCountryCode(countryIso);
++            WifiManager wifi = (WifiManager)mPhone.getContext().getSystemService(Context.WIFI_SERVICE);
++            if(wifi != null) wifi.setCountryCode(countryIso);
+         }
+     }
+ 
+-- 
+2.7.4
+

@@ -1,0 +1,77 @@
+From 97fc6c8d2a0ed3f823c7a955e97583960d2a752d Mon Sep 17 00:00:00 2001
+From: Pierre-Hugues Husson <phh@phh.me>
+Date: Thu, 16 Aug 2018 22:29:11 +0200
+Subject: [PATCH 4/4] Fix Samsung TS suspend by reseting it when waking up
+
+Change-Id: I5ee289dcb2347bedc96573bf16bc4c3d1f1b9de3
+---
+ libsuspend/autosuspend_wakeup_count.cpp | 39 +++++++++++++++++++++++++++++++++
+ 1 file changed, 39 insertions(+)
+
+diff --git a/libsuspend/autosuspend_wakeup_count.cpp b/libsuspend/autosuspend_wakeup_count.cpp
+index 27c8629..b8580ef 100644
+--- a/libsuspend/autosuspend_wakeup_count.cpp
++++ b/libsuspend/autosuspend_wakeup_count.cpp
+@@ -53,6 +53,35 @@ static constexpr char sys_power_state[] = "/sys/power/state";
+ static constexpr char sys_power_wakeup_count[] = "/sys/power/wakeup_count";
+ static bool autosuspend_is_init = false;
+ 
++static std::string samsung_touchscreen_readname(const std::string& path) {
++    std::string fullPath = path + "/name";
++    std::string name;
++    if(!android::base::ReadFileToString(fullPath, &name))
++        name = "unknown";
++    return name;
++}
++
++static std::string samsung_touchscreen_enabled() {
++    int fd = -1;
++    for(int i=0; i<30; i++) {
++	std::string is = std::to_string(i);
++        std::string name;
++        std::string path = "/sys/class/input/input" + is + "/name";
++        if(!android::base::ReadFileToString(path, &name))
++            name = "unknown";
++        if(name == "sec_touchscreen" ||
++                name =="sec_touchscreen\n") {
++            return "/sys/class/input/input" + is + "/enabled";
++        }
++    }
++    return "";
++}
++
++static bool samsung_touchscreen_set(bool enable) {
++	const std::string path = samsung_touchscreen_enabled();
++	return android::base::WriteStringToFile(path, enable ? "1" : "0");
++}
++
+ static void update_sleep_time(bool success) {
+     if (success) {
+         sleep_time = BASE_SLEEP_TIME;
+@@ -64,6 +93,7 @@ static void update_sleep_time(bool success) {
+ 
+ static void* suspend_thread_func(void* arg __attribute__((unused))) {
+     bool success = true;
++    bool samsungTs = true;
+ 
+     while (true) {
+         update_sleep_time(success);
+@@ -95,6 +125,15 @@ static void* suspend_thread_func(void* arg __attribute__((unused))) {
+             LOG(VERBOSE) << "write " << sleep_state << " to " << sys_power_state;
+             success = WriteStringToFd(sleep_state, state_fd);
+ 
++            if(success) {
++                if(samsungTs) {
++                    LOG(VERBOSE) << "Resetting Samsung TS";
++                    samsung_touchscreen_set(0);
++                    for(int i=0; i<10 && !samsung_touchscreen_set(1); i++)
++                        LOG(VERBOSE) << "Resetting Samsung TS: try " << i;
++                }
++            }
++
+             void (*func)(bool success) = wakeup_func;
+             if (func != NULL) {
+                 (*func)(success);
+-- 
+2.7.4
+
