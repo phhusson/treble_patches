@@ -1,0 +1,46 @@
+From c5614e24c92589437b8737b3ac39f7d43e4bd61e Mon Sep 17 00:00:00 2001
+From: Pierre-Hugues Husson <phh@phh.me>
+Date: Wed, 29 Aug 2018 11:05:54 +0200
+Subject: [PATCH 23/24] Add a property to override pre-o max aspect ratio
+
+---
+ services/core/java/com/android/server/am/ActivityRecord.java | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/services/core/java/com/android/server/am/ActivityRecord.java b/services/core/java/com/android/server/am/ActivityRecord.java
+index 75f2723..28f6eae 100644
+--- a/services/core/java/com/android/server/am/ActivityRecord.java
++++ b/services/core/java/com/android/server/am/ActivityRecord.java
+@@ -163,6 +163,7 @@ import android.os.PersistableBundle;
+ import android.os.Process;
+ import android.os.RemoteException;
+ import android.os.SystemClock;
++import android.os.SystemProperties;
+ import android.os.Trace;
+ import android.os.UserHandle;
+ import android.os.storage.StorageManager;
+@@ -2421,7 +2422,7 @@ final class ActivityRecord extends ConfigurationContainer implements AppWindowCo
+     // TODO(b/36505427): Consider moving this method and similar ones to ConfigurationContainer.
+     private void computeBounds(Rect outBounds) {
+         outBounds.setEmpty();
+-        final float maxAspectRatio = info.maxAspectRatio;
++        float maxAspectRatio = info.maxAspectRatio;
+         final ActivityStack stack = getStack();
+         if (task == null || stack == null || task.inMultiWindowMode() || maxAspectRatio == 0
+                 || isInVrUiMode(getConfiguration())) {
+@@ -2432,6 +2433,12 @@ final class ActivityRecord extends ConfigurationContainer implements AppWindowCo
+             return;
+         }
+ 
++        if(info.applicationInfo.targetSdkVersion < O) {
++            try {
++                maxAspectRatio = Float.parseFloat(SystemProperties.get("persist.sys.max_aspect_ratio.pre_o", ""));
++            } catch (Throwable t) {}
++            Log.d("PHH", "Overrode aspect ratio because pre-o to " + maxAspectRatio);
++        }
+         // We must base this on the parent configuration, because we set our override
+         // configuration's appBounds based on the result of this method. If we used our own
+         // configuration, it would be influenced by past invocations.
+-- 
+2.7.4
+

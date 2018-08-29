@@ -1,7 +1,7 @@
 From b3bf3329f50ba0fc4a494a772d5f76b66dc67a2c Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Tue, 1 May 2018 17:47:36 +0200
-Subject: [PATCH 03/20] Also scan /system/overlay
+Subject: [PATCH 03/24] Also scan /system/overlay
 
 Change-Id: Ib0223560606b80cdaaa986b159b34b4db0154589
 ---
