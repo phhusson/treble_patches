@@ -1,4 +1,4 @@
-From c5614e24c92589437b8737b3ac39f7d43e4bd61e Mon Sep 17 00:00:00 2001
+From 534afa02094b03917bd90202ff9cd05b51d6bfa6 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Wed, 29 Aug 2018 11:05:54 +0200
 Subject: [PATCH 23/24] Add a property to override pre-o max aspect ratio

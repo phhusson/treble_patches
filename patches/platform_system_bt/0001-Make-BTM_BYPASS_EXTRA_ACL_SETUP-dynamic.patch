@@ -1,4 +1,4 @@
-From c55023b50ae531a72fc644aa9a752fdc1cf3a1df Mon Sep 17 00:00:00 2001
+From 6db5219010250efed52f7a7c4330ca14f23477c7 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Tue, 20 Feb 2018 23:04:50 +0100
 Subject: [PATCH] Make BTM_BYPASS_EXTRA_ACL_SETUP dynamic

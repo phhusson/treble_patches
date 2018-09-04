@@ -1,4 +1,4 @@
-From 4459e03e52773a42d83bca5a02172d658e7fc2b9 Mon Sep 17 00:00:00 2001
+From 3cc7058915def58c3371bae1c9b15f1fa6579095 Mon Sep 17 00:00:00 2001
 From: Ricardo Cerqueira <cyanogenmod@cerqueira.org>
 Date: Fri, 23 Nov 2012 14:23:16 +0000
 Subject: [PATCH 17/24] Reintroduce button-backlight (and respective inactivity

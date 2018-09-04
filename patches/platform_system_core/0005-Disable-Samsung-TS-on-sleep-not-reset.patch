@@ -1,0 +1,47 @@
+From 18233a42292c2c35c67ab080707a7f0afb70efe5 Mon Sep 17 00:00:00 2001
+From: Pierre-Hugues Husson <phh@phh.me>
+Date: Tue, 4 Sep 2018 00:23:05 +0200
+Subject: [PATCH 5/5] Disable Samsung TS on sleep, not reset
+
+Change-Id: I10ba2ab437396de92535517e856e52bc7196b860
+---
+ libsuspend/autosuspend_wakeup_count.cpp | 15 +++++----------
+ 1 file changed, 5 insertions(+), 10 deletions(-)
+
+diff --git a/libsuspend/autosuspend_wakeup_count.cpp b/libsuspend/autosuspend_wakeup_count.cpp
+index 1624866..890bb1a 100644
+--- a/libsuspend/autosuspend_wakeup_count.cpp
++++ b/libsuspend/autosuspend_wakeup_count.cpp
+@@ -70,7 +70,7 @@ static std::string samsung_touchscreen_enabled() {
+ }
+ 
+ static bool samsung_touchscreen_set(const std::string& path, bool enable) {
+-	LOG(INFO) << "Setting samsung to path " << path;
++	LOG(INFO) << "Setting samsung to path " << path << ":" << enable;
+ 	return android::base::WriteStringToFile(enable ? "1" : "0", path);
+ }
+ 
+@@ -116,16 +116,11 @@ static void* suspend_thread_func(void* arg __attribute__((unused))) {
+         LOG(VERBOSE) << "write " << wakeup_count << " to wakeup_count";
+         if (WriteStringToFd(wakeup_count, wakeup_count_fd)) {
+             LOG(VERBOSE) << "write " << sleep_state << " to " << sys_power_state;
++            if(samsungTs != "")
++                samsung_touchscreen_set(samsungTs, 0);
+             success = WriteStringToFd(sleep_state, state_fd);
+-
+-            if(success) {
+-                if(samsungTs != "") {
+-                    LOG(INFO) << "Resetting Samsung TS";
+-                    samsung_touchscreen_set(samsungTs, 0);
+-                    for(int i=0; i<10 && !samsung_touchscreen_set(samsungTs, 1); i++)
+-                        LOG(INFO) << "Resetting Samsung TS: try " << i;
+-                }
+-            }
++            if(samsungTs != "")
++                samsung_touchscreen_set(samsungTs, 1);
+ 
+             void (*func)(bool success) = wakeup_func;
+             if (func != NULL) {
+-- 
+2.7.4
+

@@ -1,7 +1,7 @@
 From 954a67616bd63aac1cb094117edbdfb2f04a405d Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Thu, 16 Aug 2018 22:29:11 +0200
-Subject: [PATCH 4/4] Fix Samsung TS suspend by reseting it when waking up
+Subject: [PATCH 4/5] Fix Samsung TS suspend by reseting it when waking up
 
 Change-Id: I5ee289dcb2347bedc96573bf16bc4c3d1f1b9de3
 ---
