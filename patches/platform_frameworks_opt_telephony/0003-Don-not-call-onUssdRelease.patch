@@ -21,7 +21,7 @@ index 2c167bde5..97951c0f8 100644
  
              if (isUssdRelease) {
 -                found.onUssdRelease();
-+                if (SystemProperties.getBoolean("ro.telephony.isHisiRIL", false)) {
++                if (SystemProperties.getBoolean("persist.sys.radio.huawei", false)) {
 +                    found.onUssdFinished(ussdMessage, isUssdRequest);
 +                } else {
 +                    found.onUssdRelease();

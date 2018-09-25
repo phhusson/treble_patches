@@ -30,7 +30,7 @@ index c41de8286c..1f9c78c694 100644
      for (auto& cameraId : deviceIds) {
          String8 id8 = String8(cameraId.c_str());
 +
-+   if (property_get_bool("ro.camera.isHisiCamera", false)) {
++ if (property_get_bool("persist.sys.camera.huawei", false)) {
 +        bool cameraFound = false;
 +        {
 +            Mutex::Autolock lock(mCameraStatesLock);
