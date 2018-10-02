@@ -1,4 +1,4 @@
-From 3a5d884d899664223b8b78c331180c6e3a1b6d05 Mon Sep 17 00:00:00 2001
+From e3d4f144c3322ef7910c4f61dc8cbfc1f17c9455 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Tue, 14 Aug 2018 20:54:08 +0200
 Subject: [PATCH 3/5] Create vendor_de. This is done by /init.rc on

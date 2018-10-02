@@ -1,4 +1,4 @@
-From 2c2a7ca972e38efbf020fc6f152c3489e9181255 Mon Sep 17 00:00:00 2001
+From 7d646a0485717ca51918de3869e4259e760e9b5e Mon Sep 17 00:00:00 2001
 From: Alexander Pohl <pohl199885@gmail.com>
 Date: Fri, 15 Jun 2018 19:58:07 +0200
 Subject: [PATCH 2/4] Fix WiFi-Display on Huawei devices (EMUI 8.0)

@@ -1,4 +1,4 @@
-From 8004f0102629d11e3fa17a13593bf84742761add Mon Sep 17 00:00:00 2001
+From 18b7fc6d0fb54a16e6d1d095b000dc8840511eff Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Mon, 20 Aug 2018 22:38:08 +0200
 Subject: [PATCH 5/5] Also create vendor_ce (same reason as vendor_de)

@@ -1,4 +1,4 @@
-From d47f885779df648b149d2b061603c56bf4a50c2c Mon Sep 17 00:00:00 2001
+From 837973ddf1da4d9dd83b21071c59401362a0e745 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Wed, 15 Aug 2018 12:27:21 +0200
 Subject: [PATCH 2/2] Relax /proc read from ueventd, huawei needs it

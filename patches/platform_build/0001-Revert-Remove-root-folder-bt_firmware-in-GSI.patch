@@ -1,4 +1,4 @@
-From 837c24d2cfefa1276740b8cf54e748ad160ff5c6 Mon Sep 17 00:00:00 2001
+From 70b81271bf7e27121ecb982aeb568e1eaf920b52 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Tue, 27 Mar 2018 23:26:49 +0200
 Subject: [PATCH 1/2] Revert "Remove root folder bt_firmware in GSI"

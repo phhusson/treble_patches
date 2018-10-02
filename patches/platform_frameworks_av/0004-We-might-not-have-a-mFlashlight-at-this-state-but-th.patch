@@ -1,4 +1,4 @@
-From b230536a4577e53e68e2f2a70e25939f8ef313b7 Mon Sep 17 00:00:00 2001
+From 817812fb440b18c27ae261cb06d7e4825ca92ae9 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Sun, 19 Aug 2018 23:05:26 +0200
 Subject: [PATCH 4/4] We might not have a mFlashlight at this state, but that's

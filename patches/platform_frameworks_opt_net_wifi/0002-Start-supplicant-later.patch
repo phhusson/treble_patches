@@ -1,7 +1,7 @@
 From a891832a0b7aa42978630532cb5bba2c45e7633d Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Wed, 15 Aug 2018 00:04:45 +0200
-Subject: [PATCH 2/2] Start supplicant later
+Subject: [PATCH 2/3] Start supplicant later
 
 Change-Id: I6a67baad486162415840006711fb6d8dbf96a66a
 ---

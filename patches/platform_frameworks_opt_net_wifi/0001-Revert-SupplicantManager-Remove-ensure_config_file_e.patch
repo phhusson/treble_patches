@@ -1,7 +1,7 @@
 From 327d25dd7f34dbf3218ad989d4de538515d3c189 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Tue, 14 Aug 2018 16:59:12 +0200
-Subject: [PATCH 1/2] Revert "SupplicantManager: Remove
+Subject: [PATCH 1/3] Revert "SupplicantManager: Remove
  |ensure_config_file_exists|"
 
 This reverts commit f61dc8cd7dadda5741d6e4a1bb6b576ba89cc24b.
