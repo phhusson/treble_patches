@@ -1,0 +1,79 @@
+From 12352b4d5e41d206e5632fc9b7d04af8053e72ae Mon Sep 17 00:00:00 2001
+From: Hackintosh 5 <penn.mackintosh@gmail.com>
+Date: Fri, 8 Feb 2019 09:31:51 +0000
+Subject: [PATCH] Fix huawei timeouts
+
+---
+ hci/src/hci_layer.cc | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
+
+diff --git a/hci/src/hci_layer.cc b/hci/src/hci_layer.cc
+index f1e0e7a60..9a6e36f33 100644
+--- a/hci/src/hci_layer.cc
++++ b/hci/src/hci_layer.cc
+@@ -78,6 +78,8 @@ static const int BT_HCI_RT_PRIORITY = 1;
+ 
+ // Abort if there is no response to an HCI command.
+ static const uint32_t COMMAND_PENDING_TIMEOUT_MS = 2000;
++// But let the buggy Huawei commands have a longer timeout so we don't crash if there is no error.
++static const uint32_t HUAWEI_COMMAND_PENDING_TIMEOUT_MS = 5000;
+ static const uint32_t COMMAND_PENDING_MUTEX_ACQUIRE_TIMEOUT_MS = 500;
+ static const uint32_t COMMAND_TIMEOUT_RESTART_MS = 5000;
+ static const int HCI_UNKNOWN_COMMAND_TIMED_OUT = 0x00ffffff;
+@@ -127,7 +129,7 @@ static void enqueue_packet(void* packet);
+ static void event_packet_ready(void* packet);
+ static void command_timed_out(void* context);
+ 
+-static void update_command_response_timer(void);
++static void update_command_response_timer(int opcode);
+ 
+ static void transmit_fragment(BT_HDR* packet, bool send_transmit_finished);
+ static void dispatch_reassembled(BT_HDR* packet);
+@@ -430,7 +432,7 @@ static void event_command_ready(waiting_command_t* wait_entry) {
+   // Send it off
+   packet_fragmenter->fragment_and_dispatch(wait_entry->command);
+ 
+-  update_command_response_timer();
++  update_command_response_timer(wait_entry->opcode);
+ }
+ 
+ static void enqueue_packet(void* packet) {
+@@ -623,7 +625,7 @@ static bool filter_incoming_event(BT_HDR* packet) {
+                  __func__, opcode);
+       }
+     } else {
+-      update_command_response_timer();
++      update_command_response_timer(wait_entry->opcode);
+       if (wait_entry->complete_callback) {
+         wait_entry->complete_callback(packet, wait_entry->context);
+       } else if (wait_entry->complete_future) {
+@@ -650,7 +652,7 @@ static bool filter_incoming_event(BT_HDR* packet) {
+           "%s command status event with no matching command. opcode: 0x%04x",
+           __func__, opcode);
+     } else {
+-      update_command_response_timer();
++      update_command_response_timer(wait_entry->opcode);
+       if (wait_entry->status_callback)
+         wait_entry->status_callback(status, wait_entry->command,
+                                     wait_entry->context);
+@@ -725,7 +727,7 @@ static int get_num_waiting_commands() {
+   return list_length(commands_pending_response);
+ }
+ 
+-static void update_command_response_timer(void) {
++static void update_command_response_timer(int opcode) {
+   std::lock_guard<std::recursive_timed_mutex> lock(
+       commands_pending_response_mutex);
+ 
+@@ -733,7 +735,7 @@ static void update_command_response_timer(void) {
+   if (list_is_empty(commands_pending_response)) {
+     alarm_cancel(command_response_timer);
+   } else {
+-    alarm_set(command_response_timer, COMMAND_PENDING_TIMEOUT_MS,
++    alarm_set(command_response_timer, (opcode == 0x804) ? HUAWEI_COMMAND_PENDING_TIMEOUT_MS : COMMAND_PENDING_TIMEOUT_MS,
+               command_timed_out, list_front(commands_pending_response));
+   }
+ }
+-- 
+2.17.1
+
