@@ -1,0 +1,62 @@
+From 1eda6228d6cf4e68f38f0575db676d99a767b775 Mon Sep 17 00:00:00 2001
+From: Yangster <yanglu@google.com>
+Date: Wed, 12 Sep 2018 14:17:26 -0700
+Subject: [PATCH 16/26] Allow stats_companion to register thermal throttling
+ event listener.
+
+Test: manual test
+
+BUG: b/112432890
+Change-Id: If703cd25a2c0864ffd49bfdc83821fae291974b5
+---
+ prebuilts/api/28.0/private/system_server.te  | 1 +
+ prebuilts/api/28.0/public/thermalserviced.te | 1 +
+ private/system_server.te                     | 1 +
+ public/thermalserviced.te                    | 1 +
+ 4 files changed, 4 insertions(+)
+
+diff --git a/prebuilts/api/28.0/private/system_server.te b/prebuilts/api/28.0/private/system_server.te
+index fa84c322..a1ea12f9 100644
+--- a/prebuilts/api/28.0/private/system_server.te
++++ b/prebuilts/api/28.0/private/system_server.te
+@@ -623,6 +623,7 @@ allow system_server netd_service:service_manager find;
+ allow system_server nfc_service:service_manager find;
+ allow system_server radio_service:service_manager find;
+ allow system_server stats_service:service_manager find;
++allow system_server thermal_service:service_manager find;
+ allow system_server storaged_service:service_manager find;
+ allow system_server surfaceflinger_service:service_manager find;
+ allow system_server vold_service:service_manager find;
+diff --git a/prebuilts/api/28.0/public/thermalserviced.te b/prebuilts/api/28.0/public/thermalserviced.te
+index 00e00713..1b40c6af 100644
+--- a/prebuilts/api/28.0/public/thermalserviced.te
++++ b/prebuilts/api/28.0/public/thermalserviced.te
+@@ -11,3 +11,4 @@ hal_client_domain(thermalserviced, hal_thermal)
+ add_hwservice(thermalserviced, thermalcallback_hwservice)
+ 
+ binder_call(thermalserviced, platform_app)
++binder_call(thermalserviced, system_server)
+diff --git a/private/system_server.te b/private/system_server.te
+index fa84c322..a1ea12f9 100644
+--- a/private/system_server.te
++++ b/private/system_server.te
+@@ -623,6 +623,7 @@ allow system_server netd_service:service_manager find;
+ allow system_server nfc_service:service_manager find;
+ allow system_server radio_service:service_manager find;
+ allow system_server stats_service:service_manager find;
++allow system_server thermal_service:service_manager find;
+ allow system_server storaged_service:service_manager find;
+ allow system_server surfaceflinger_service:service_manager find;
+ allow system_server vold_service:service_manager find;
+diff --git a/public/thermalserviced.te b/public/thermalserviced.te
+index 00e00713..1b40c6af 100644
+--- a/public/thermalserviced.te
++++ b/public/thermalserviced.te
+@@ -11,3 +11,4 @@ hal_client_domain(thermalserviced, hal_thermal)
+ add_hwservice(thermalserviced, thermalcallback_hwservice)
+ 
+ binder_call(thermalserviced, platform_app)
++binder_call(thermalserviced, system_server)
+-- 
+2.17.1
+

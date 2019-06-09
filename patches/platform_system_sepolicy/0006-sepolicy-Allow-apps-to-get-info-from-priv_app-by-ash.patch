@@ -1,0 +1,143 @@
+From db7e034ef9a6e36bc96b1249b2cf0b00418778f0 Mon Sep 17 00:00:00 2001
+From: "ji, zhenlong z" <zhenlong.z.ji@intel.com>
+Date: Fri, 19 Oct 2018 13:21:52 +0800
+Subject: [PATCH 06/26] sepolicy: Allow apps to get info from priv_app by
+ ashmem
+
+This is used to address a CTS testcase failure. This CTS
+testcase need to access the content of Contact, some data
+from ContactProvider is transfered through ashmem.
+
+Currently ashmem is backed by the tmpfs filesystem, ContactProvider
+in android run as a priv_app, so the file context of the ashmem
+created by ContactProvider is priv_app_tmpfs. CTS runs as an
+untrusted_app, need to be granted the read permission to the
+priv_app_tmpfs files.
+
+Bug: 117961216
+
+[Android Version]:
+android_p_mr0_r0
+
+[Kernel Version]:
+4.19.0-rc8
+
+[CTS Version]:
+cts-9.0_r1
+
+[Failed Testcase]:
+com.android.cts.devicepolicy.ManagedProfileTest#testManagedContactsPolicies
+
+[Error Log]:
+11-11 11:15:50.479 12611 12611 W AndroidTestSuit: type=1400 audit(0.0:811):
+avc: denied { read } for path=2F6465762F6173686D656D202864656C6574656429
+dev="tmpfs" ino=174636 scontext=u:r:untrusted_app:s0:c113,c256,c522,c768
+tcontext=u:object_r:priv_app_tmpfs:s0:c522,c768 tclass=file permissive=0
+
+[Test Result With This Patch]:
+PASS
+
+Change-Id: I45efacabe64af36912a53df60ac059889fde1629
+(cherry picked from fdfa42bf298d794035a0f4de9d8abe8d8e0c3fb8)
+---
+ prebuilts/api/28.0/private/app.te | 4 ++++
+ prebuilts/api/28.0/private/mls    | 6 +++---
+ private/app.te                    | 4 ++++
+ private/mls                       | 6 +++---
+ 4 files changed, 14 insertions(+), 6 deletions(-)
+
+diff --git a/prebuilts/api/28.0/private/app.te b/prebuilts/api/28.0/private/app.te
+index d739239c..7d9bc89e 100644
+--- a/prebuilts/api/28.0/private/app.te
++++ b/prebuilts/api/28.0/private/app.te
+@@ -6,6 +6,10 @@ allow appdomain zygote_tmpfs:file read;
+ # ashmem, e.g. battery stats.
+ allow appdomain system_server_tmpfs:file read;
+ 
++# Get info from priv_app through ashmem, such as contact
++# info etc.
++allow appdomain priv_app_tmpfs:file read;
++
+ neverallow appdomain system_server:udp_socket {
+         accept append bind create ioctl listen lock name_bind
+         relabelfrom relabelto setattr shutdown };
+diff --git a/prebuilts/api/28.0/private/mls b/prebuilts/api/28.0/private/mls
+index 3b8ee3f4..9ab699bd 100644
+--- a/prebuilts/api/28.0/private/mls
++++ b/prebuilts/api/28.0/private/mls
+@@ -57,7 +57,7 @@ mlsconstrain dir_file_class_set { create relabelfrom relabelto }
+ mlsconstrain dir { open search setattr rename add_name remove_name reparent rmdir }
+ 	     (t2 != app_data_file or l1 dom l2 or t1 == mlstrustedsubject);
+ mlsconstrain { file lnk_file sock_file } { open setattr unlink link rename }
+-	     (t2 != app_data_file or l1 dom l2 or t1 == mlstrustedsubject);
++	     ( (t2 != app_data_file and t2 != priv_app_tmpfs) or l1 dom l2 or t1 == mlstrustedsubject);
+ 
+ #
+ # Constraints for file types other than app data files.
+@@ -69,7 +69,7 @@ mlsconstrain dir { read getattr search }
+ 	     (t2 == app_data_file or l1 dom l2 or t1 == mlstrustedsubject or t2 == mlstrustedobject);
+ 
+ mlsconstrain { file lnk_file sock_file chr_file blk_file } { read getattr execute }
+-	     (t2 == app_data_file or l1 dom l2 or t1 == mlstrustedsubject or t2 == mlstrustedobject);
++	     (t2 == app_data_file or t2 == priv_app_tmpfs or l1 dom l2 or t1 == mlstrustedsubject or t2 == mlstrustedobject);
+ 
+ # Write operations: Subject must be equivalent to the object unless the
+ # subject or the object is trusted.
+@@ -77,7 +77,7 @@ mlsconstrain dir { write setattr rename add_name remove_name reparent rmdir }
+ 	     (t2 == app_data_file or l1 eq l2 or t1 == mlstrustedsubject or t2 == mlstrustedobject);
+ 
+ mlsconstrain { file lnk_file sock_file chr_file blk_file } { write setattr append unlink link rename }
+-	     (t2 == app_data_file or l1 eq l2 or t1 == mlstrustedsubject or t2 == mlstrustedobject);
++	     (t2 == app_data_file or t2 == priv_app_tmpfs or l1 eq l2 or t1 == mlstrustedsubject or t2 == mlstrustedobject);
+ 
+ # Special case for FIFOs.
+ # These can be unnamed pipes, in which case they will be labeled with the
+diff --git a/private/app.te b/private/app.te
+index d739239c..7d9bc89e 100644
+--- a/private/app.te
++++ b/private/app.te
+@@ -6,6 +6,10 @@ allow appdomain zygote_tmpfs:file read;
+ # ashmem, e.g. battery stats.
+ allow appdomain system_server_tmpfs:file read;
+ 
++# Get info from priv_app through ashmem, such as contact
++# info etc.
++allow appdomain priv_app_tmpfs:file read;
++
+ neverallow appdomain system_server:udp_socket {
+         accept append bind create ioctl listen lock name_bind
+         relabelfrom relabelto setattr shutdown };
+diff --git a/private/mls b/private/mls
+index 3b8ee3f4..9ab699bd 100644
+--- a/private/mls
++++ b/private/mls
+@@ -57,7 +57,7 @@ mlsconstrain dir_file_class_set { create relabelfrom relabelto }
+ mlsconstrain dir { open search setattr rename add_name remove_name reparent rmdir }
+ 	     (t2 != app_data_file or l1 dom l2 or t1 == mlstrustedsubject);
+ mlsconstrain { file lnk_file sock_file } { open setattr unlink link rename }
+-	     (t2 != app_data_file or l1 dom l2 or t1 == mlstrustedsubject);
++	     ( (t2 != app_data_file and t2 != priv_app_tmpfs) or l1 dom l2 or t1 == mlstrustedsubject);
+ 
+ #
+ # Constraints for file types other than app data files.
+@@ -69,7 +69,7 @@ mlsconstrain dir { read getattr search }
+ 	     (t2 == app_data_file or l1 dom l2 or t1 == mlstrustedsubject or t2 == mlstrustedobject);
+ 
+ mlsconstrain { file lnk_file sock_file chr_file blk_file } { read getattr execute }
+-	     (t2 == app_data_file or l1 dom l2 or t1 == mlstrustedsubject or t2 == mlstrustedobject);
++	     (t2 == app_data_file or t2 == priv_app_tmpfs or l1 dom l2 or t1 == mlstrustedsubject or t2 == mlstrustedobject);
+ 
+ # Write operations: Subject must be equivalent to the object unless the
+ # subject or the object is trusted.
+@@ -77,7 +77,7 @@ mlsconstrain dir { write setattr rename add_name remove_name reparent rmdir }
+ 	     (t2 == app_data_file or l1 eq l2 or t1 == mlstrustedsubject or t2 == mlstrustedobject);
+ 
+ mlsconstrain { file lnk_file sock_file chr_file blk_file } { write setattr append unlink link rename }
+-	     (t2 == app_data_file or l1 eq l2 or t1 == mlstrustedsubject or t2 == mlstrustedobject);
++	     (t2 == app_data_file or t2 == priv_app_tmpfs or l1 eq l2 or t1 == mlstrustedsubject or t2 == mlstrustedobject);
+ 
+ # Special case for FIFOs.
+ # These can be unnamed pipes, in which case they will be labeled with the
+-- 
+2.17.1
+

@@ -1,0 +1,81 @@
+From 1b075d539ca1e22c3dc3ad733cab4f4bdbddb156 Mon Sep 17 00:00:00 2001
+From: Bowgo Tsai <bowgotsai@google.com>
+Date: Fri, 13 Jul 2018 23:34:48 +0800
+Subject: [PATCH 03/26] Allowing vold to search /mnt/vendor/*
+
+vold will trim rw mount points about daily, but it is denied by SELinux:
+
+root   603   603 W Binder:603_2: type=1400 audit(0.0:11): avc: denied {
+search } for name="vendor" dev="tmpfs" ino=23935 scontext=u:r:vold:s0
+tcontext=u:object_r:mnt_vendor_file:s0 tclass=dir permissive=0
+
+Allowing vold to search /mnt/vendor/* to fix the denials.
+
+Note that device-specific sepolicy needs to be extended to allow vold
+to send FITRIM ioctl. e.g., for /mnt/vendor/persist, it needs:
+
+    allow vold persist_file:dir { ioctl open read };
+
+Bug: 111409607
+Test: boot a device, checks the above denial is gone
+Change-Id: Ia9f22d973e5a2e295678781de49a0f61fccd9dad
+Merged-In: Ia9f22d973e5a2e295678781de49a0f61fccd9dad
+(cherry picked from commit 7b67a617dd498e8b892c3475e96deaa0da6d1649)
+---
+ prebuilts/api/28.0/public/domain.te | 1 +
+ prebuilts/api/28.0/public/vold.te   | 3 +++
+ public/domain.te                    | 1 +
+ public/vold.te                      | 3 +++
+ 4 files changed, 8 insertions(+)
+
+diff --git a/prebuilts/api/28.0/public/domain.te b/prebuilts/api/28.0/public/domain.te
+index b94a9d8b..f7a38c49 100644
+--- a/prebuilts/api/28.0/public/domain.te
++++ b/prebuilts/api/28.0/public/domain.te
+@@ -1397,4 +1397,5 @@ neverallow {
+   coredomain
+   -init
+   -ueventd
++  -vold
+ } mnt_vendor_file:dir *;
+diff --git a/prebuilts/api/28.0/public/vold.te b/prebuilts/api/28.0/public/vold.te
+index 131f555d..4d15f11e 100644
+--- a/prebuilts/api/28.0/public/vold.te
++++ b/prebuilts/api/28.0/public/vold.te
+@@ -206,6 +206,9 @@ allow vold user_profile_data_file:dir create_dir_perms;
+ # Raw writes to misc block device
+ allow vold misc_block_device:blk_file w_file_perms;
+ 
++# vold might need to search or mount /mnt/vendor/*
++allow vold mnt_vendor_file:dir search;
++
+ neverallow {
+     domain
+     -vold
+diff --git a/public/domain.te b/public/domain.te
+index b94a9d8b..f7a38c49 100644
+--- a/public/domain.te
++++ b/public/domain.te
+@@ -1397,4 +1397,5 @@ neverallow {
+   coredomain
+   -init
+   -ueventd
++  -vold
+ } mnt_vendor_file:dir *;
+diff --git a/public/vold.te b/public/vold.te
+index 131f555d..4d15f11e 100644
+--- a/public/vold.te
++++ b/public/vold.te
+@@ -206,6 +206,9 @@ allow vold user_profile_data_file:dir create_dir_perms;
+ # Raw writes to misc block device
+ allow vold misc_block_device:blk_file w_file_perms;
+ 
++# vold might need to search or mount /mnt/vendor/*
++allow vold mnt_vendor_file:dir search;
++
+ neverallow {
+     domain
+     -vold
+-- 
+2.17.1
+

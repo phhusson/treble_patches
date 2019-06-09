@@ -1,0 +1,79 @@
+From 6e26721f15834a51d26ae6536fa7a043ac829a58 Mon Sep 17 00:00:00 2001
+From: Tri Vo <trong@google.com>
+Date: Mon, 17 Sep 2018 19:17:41 -0700
+Subject: [PATCH 04/26] system_writes_mnt_vendor_violators for device launched
+ before P.
+
+In cases when a device upgrades to system-as-root from O to P, it needs a mount
+point for an already existing partition that is accessed by both system and
+vendor.
+
+Devices launching with P must not have /mnt/vendor accessible to system.
+
+Bug: 78598545
+Test: m selinx_policy
+Change-Id: Ia7bcde44e2b8657a7ad9e0d9bae7a7259f40936f
+Merged-In: Ia7bcde44e2b8657a7ad9e0d9bae7a7259f40936f
+(cherry picked from commit ca4217e2111cb8e5ca8cae7a6a923cd5d5408e33)
+---
+ prebuilts/api/28.0/public/attributes | 5 +++++
+ prebuilts/api/28.0/public/domain.te  | 1 +
+ public/attributes                    | 5 +++++
+ public/domain.te                     | 1 +
+ 4 files changed, 12 insertions(+)
+
+diff --git a/prebuilts/api/28.0/public/attributes b/prebuilts/api/28.0/public/attributes
+index 0c7ca2ed..42b61067 100644
+--- a/prebuilts/api/28.0/public/attributes
++++ b/prebuilts/api/28.0/public/attributes
+@@ -177,6 +177,11 @@ expandattribute system_executes_vendor_violators false;
+ attribute system_writes_vendor_properties_violators;
+ expandattribute system_writes_vendor_properties_violators false;
+ 
++# All system domains which violate the requirement of not writing to
++# /mnt/vendor/*. Must not be used on devices launched with P or later.
++attribute system_writes_mnt_vendor_violators;
++expandattribute system_writes_mnt_vendor_violators false;
++
+ # hwservices that are accessible from untrusted applications
+ # WARNING: Use of this attribute should be avoided unless
+ # absolutely necessary.  It is a temporary allowance to aid the
+diff --git a/prebuilts/api/28.0/public/domain.te b/prebuilts/api/28.0/public/domain.te
+index f7a38c49..5df0f0bd 100644
+--- a/prebuilts/api/28.0/public/domain.te
++++ b/prebuilts/api/28.0/public/domain.te
+@@ -1398,4 +1398,5 @@ neverallow {
+   -init
+   -ueventd
+   -vold
++  -system_writes_mnt_vendor_violators
+ } mnt_vendor_file:dir *;
+diff --git a/public/attributes b/public/attributes
+index 0c7ca2ed..42b61067 100644
+--- a/public/attributes
++++ b/public/attributes
+@@ -177,6 +177,11 @@ expandattribute system_executes_vendor_violators false;
+ attribute system_writes_vendor_properties_violators;
+ expandattribute system_writes_vendor_properties_violators false;
+ 
++# All system domains which violate the requirement of not writing to
++# /mnt/vendor/*. Must not be used on devices launched with P or later.
++attribute system_writes_mnt_vendor_violators;
++expandattribute system_writes_mnt_vendor_violators false;
++
+ # hwservices that are accessible from untrusted applications
+ # WARNING: Use of this attribute should be avoided unless
+ # absolutely necessary.  It is a temporary allowance to aid the
+diff --git a/public/domain.te b/public/domain.te
+index f7a38c49..5df0f0bd 100644
+--- a/public/domain.te
++++ b/public/domain.te
+@@ -1398,4 +1398,5 @@ neverallow {
+   -init
+   -ueventd
+   -vold
++  -system_writes_mnt_vendor_violators
+ } mnt_vendor_file:dir *;
+-- 
+2.17.1
+

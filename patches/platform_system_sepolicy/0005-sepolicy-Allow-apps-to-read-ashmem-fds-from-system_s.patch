@@ -1,0 +1,64 @@
+From d486d86da1ac1b7477ecc8b8fd14680bdff61530 Mon Sep 17 00:00:00 2001
+From: Benjamin Gordon <bmgordon@google.com>
+Date: Thu, 6 Sep 2018 14:41:34 -0600
+Subject: [PATCH 05/26] sepolicy: Allow apps to read ashmem fds from
+ system_server
+
+Kernel commit 8a2af06415ef0fc922162503dd18da0d9be7771f (ashmem: switch
+to ->read_iter) switched ashmem from using __vfs_read to vfs_iter_read
+to read the backing shmem file.  Prior to this, reading from an ashmem
+fd that was passed between processes didn't hit any permission checks;
+now SELinux checks that the receiver can read from the creator's file
+context.
+
+Some apps receive buffers through ashmem from system_server, e.g., the
+settings app reads battery stats from system_server through ashmem when
+an app details page is opened.  Restore this ability by giving apps read
+access to system_server_tmpfs.  system_server is still responsible for
+creating and passing across the ashmem buffers, so this doesn't give
+apps the ability to read anything system_server isn't willing to give
+them.
+
+Bug: 112987536
+Bug: 111381531
+Test: atest android.appsecurity.cts.PermissionsHostTest on kernel 4.14
+Change-Id: Ice5e25f55bc409e91ad7e8c7ea8b28ae213191a3
+(cherry picked from 360559e7bb5a0a58caa1db2b3e246b900c3fc8ff)
+---
+ prebuilts/api/28.0/private/app.te | 4 ++++
+ private/app.te                    | 4 ++++
+ 2 files changed, 8 insertions(+)
+
+diff --git a/prebuilts/api/28.0/private/app.te b/prebuilts/api/28.0/private/app.te
+index f3e1e2a0..d739239c 100644
+--- a/prebuilts/api/28.0/private/app.te
++++ b/prebuilts/api/28.0/private/app.te
+@@ -2,6 +2,10 @@
+ # Read system properties managed by zygote.
+ allow appdomain zygote_tmpfs:file read;
+ 
++# Read from (but not create) system_server buffers transferred through
++# ashmem, e.g. battery stats.
++allow appdomain system_server_tmpfs:file read;
++
+ neverallow appdomain system_server:udp_socket {
+         accept append bind create ioctl listen lock name_bind
+         relabelfrom relabelto setattr shutdown };
+diff --git a/private/app.te b/private/app.te
+index f3e1e2a0..d739239c 100644
+--- a/private/app.te
++++ b/private/app.te
+@@ -2,6 +2,10 @@
+ # Read system properties managed by zygote.
+ allow appdomain zygote_tmpfs:file read;
+ 
++# Read from (but not create) system_server buffers transferred through
++# ashmem, e.g. battery stats.
++allow appdomain system_server_tmpfs:file read;
++
+ neverallow appdomain system_server:udp_socket {
+         accept append bind create ioctl listen lock name_bind
+         relabelfrom relabelto setattr shutdown };
+-- 
+2.17.1
+

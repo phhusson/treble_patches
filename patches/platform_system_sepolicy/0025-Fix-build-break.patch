@@ -1,0 +1,33 @@
+From 1b75ad74d245a0a40bfa949645323ef2f5d19dd5 Mon Sep 17 00:00:00 2001
+From: Bowgo Tsai <bowgotsai@google.com>
+Date: Fri, 14 Sep 2018 10:48:06 +0800
+Subject: [PATCH 25/26] Fix build break
+
+Need to update prebuilts/api/28.0 to fix the build error caused by:
+
+  https://android-review.googlesource.com/c/platform/system/sepolicy/+/751394
+
+Bug: 114017832
+Test: m selinux_policy
+Change-Id: I077a368b33682d90bdb1a007ba071708ee70ae42
+---
+ prebuilts/api/28.0/public/property_contexts | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/prebuilts/api/28.0/public/property_contexts b/prebuilts/api/28.0/public/property_contexts
+index f252b4a3..8e53eef8 100644
+--- a/prebuilts/api/28.0/public/property_contexts
++++ b/prebuilts/api/28.0/public/property_contexts
+@@ -98,7 +98,9 @@ ro.config.notification_sound u:object_r:exported2_config_prop:s0 exact string
+ ro.config.ringtone u:object_r:exported2_config_prop:s0 exact string
+ ro.control_privapp_permissions u:object_r:exported3_default_prop:s0 exact string
+ ro.cp_system_other_odex u:object_r:exported3_default_prop:s0 exact int
++ro.crypto.allow_encrypt_override u:object_r:exported2_vold_prop:s0 exact bool
+ ro.crypto.scrypt_params u:object_r:exported2_vold_prop:s0 exact string
++ro.crypto.volume.filenames_mode u:object_r:exported2_vold_prop:s0 exact string
+ ro.dalvik.vm.native.bridge u:object_r:exported_dalvik_prop:s0 exact string
+ ro.enable_boot_charger_mode u:object_r:exported3_default_prop:s0 exact bool
+ ro.gfx.driver.0 u:object_r:exported3_default_prop:s0 exact string
+-- 
+2.17.1
+

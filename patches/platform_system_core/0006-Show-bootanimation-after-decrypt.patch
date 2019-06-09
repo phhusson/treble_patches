@@ -1,0 +1,41 @@
+From 966f9c0ebddfc7f94c2d05bfbea52616cd961911 Mon Sep 17 00:00:00 2001
+From: Isaac Lee <isaac.lee@mediatek.com>
+Date: Thu, 26 Jul 2018 17:07:25 +0800
+Subject: [PATCH] Show bootanimation after decrypt
+
+Because the original modification (restart SF which is added
+for display bootanimation) from O to P causes bootanimation NPE,
+ we remove the part of restart SF and add other flow to show
+ bootanimation.
+
+Test: manual, ran the test 10 times and it cause no NPE and
+      display BootAnimation after decrypt
+Test: boot aosp_sailfish
+
+Bug: 79547653
+Change-Id: I355ccdbb2e2f27d897e2e0ee00f9300ef38ede03
+(cherry picked from commit f32c20174349c058b20d3819802ed8aa8277c72d)
+---
+ rootdir/init.rc | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/rootdir/init.rc b/rootdir/init.rc
+index b9464e7fd8..13c5a07fd4 100644
+--- a/rootdir/init.rc
++++ b/rootdir/init.rc
+@@ -705,12 +705,12 @@ on property:vold.decrypt=trigger_restart_min_framework
+     class_start main
+ 
+ on property:vold.decrypt=trigger_restart_framework
+-    stop surfaceflinger
+-    start surfaceflinger
+     # A/B update verifier that marks a successful boot.
+     exec_start update_verifier
+     class_start main
+     class_start late_start
++    setprop service.bootanim.exit 0
++    start bootanim
+ 
+ on property:vold.decrypt=trigger_shutdown_framework
+     class_reset late_start
+

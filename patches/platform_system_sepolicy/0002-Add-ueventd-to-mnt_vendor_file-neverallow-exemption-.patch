@@ -1,0 +1,47 @@
+From 9d3dac40a9f51f0e67ea79a5f292f61a18bf08db Mon Sep 17 00:00:00 2001
+From: padarshr <padarshr@codeaurora.org>
+Date: Wed, 13 Jun 2018 17:20:34 +0530
+Subject: [PATCH 02/26] Add ueventd to mnt_vendor_file neverallow exemption
+ list
+
+Legacy hardware and code still depends on the ueventd helpers to
+locate the firmware supported files which are on new mount path
+labeled with mnt_vendot_file. For ueventd helper to work we need dir search
+and read permission on this new label so moving ueventd to exempted list.
+
+Already ueventd has the vendor_file_type read access.
+
+Bug:110083808
+Test: boot a device
+
+Change-Id: Ia15cc39ecef9e29b4f1f684efdddbeb78b427988
+Merged-In: Ia15cc39ecef9e29b4f1f684efdddbeb78b427988
+(cherry picked from commit 44ae7c2ccb5b2e31eeaa2ed091c4d9d543a8294c)
+---
+ prebuilts/api/28.0/public/domain.te | 1 +
+ public/domain.te                    | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/prebuilts/api/28.0/public/domain.te b/prebuilts/api/28.0/public/domain.te
+index e9337b65..b94a9d8b 100644
+--- a/prebuilts/api/28.0/public/domain.te
++++ b/prebuilts/api/28.0/public/domain.te
+@@ -1396,4 +1396,5 @@ userdebug_or_eng(`
+ neverallow {
+   coredomain
+   -init
++  -ueventd
+ } mnt_vendor_file:dir *;
+diff --git a/public/domain.te b/public/domain.te
+index e9337b65..b94a9d8b 100644
+--- a/public/domain.te
++++ b/public/domain.te
+@@ -1396,4 +1396,5 @@ userdebug_or_eng(`
+ neverallow {
+   coredomain
+   -init
++  -ueventd
+ } mnt_vendor_file:dir *;
+-- 
+2.17.1
+
