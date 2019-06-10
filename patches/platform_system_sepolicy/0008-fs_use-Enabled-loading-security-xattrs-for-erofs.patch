@@ -1,0 +1,42 @@
+From e9488414c03ce1c43aa92348bb951b14cff658b1 Mon Sep 17 00:00:00 2001
+From: Gao Xiang <gaoxiang25@huawei.com>
+Date: Tue, 7 Aug 2018 17:02:28 +0800
+Subject: [PATCH 08/26] fs_use: Enabled loading security xattrs for erofs
+
+Bug: 112292714
+Change-Id: I0026c13fd4335e0365496bc00c26021d83f3c39d
+Merged-In: I0026c13fd4335e0365496bc00c26021d83f3c39d
+Signed-off-by: Gao Xiang <gaoxiang25@huawei.com>
+(cherry picked from commit 910cd95354b3c3a54b7e9b4848c605de22d83c26)
+---
+ prebuilts/api/28.0/private/fs_use | 1 +
+ private/fs_use                    | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/prebuilts/api/28.0/private/fs_use b/prebuilts/api/28.0/private/fs_use
+index 4bd11126..d351c368 100644
+--- a/prebuilts/api/28.0/private/fs_use
++++ b/prebuilts/api/28.0/private/fs_use
+@@ -8,6 +8,7 @@ fs_use_xattr xfs u:object_r:labeledfs:s0;
+ fs_use_xattr btrfs u:object_r:labeledfs:s0;
+ fs_use_xattr f2fs u:object_r:labeledfs:s0;
+ fs_use_xattr squashfs u:object_r:labeledfs:s0;
++fs_use_xattr erofs u:object_r:labeledfs:s0;
+ 
+ # Label inodes from task label.
+ fs_use_task pipefs u:object_r:pipefs:s0;
+diff --git a/private/fs_use b/private/fs_use
+index 4bd11126..d351c368 100644
+--- a/private/fs_use
++++ b/private/fs_use
+@@ -8,6 +8,7 @@ fs_use_xattr xfs u:object_r:labeledfs:s0;
+ fs_use_xattr btrfs u:object_r:labeledfs:s0;
+ fs_use_xattr f2fs u:object_r:labeledfs:s0;
+ fs_use_xattr squashfs u:object_r:labeledfs:s0;
++fs_use_xattr erofs u:object_r:labeledfs:s0;
+ 
+ # Label inodes from task label.
+ fs_use_task pipefs u:object_r:pipefs:s0;
+-- 
+2.17.1
+

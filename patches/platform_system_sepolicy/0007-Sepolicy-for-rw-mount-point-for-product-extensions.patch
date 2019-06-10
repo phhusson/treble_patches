@@ -1,0 +1,202 @@
+From 221974794972b5d2917c6470a307c0fca512e4c4 Mon Sep 17 00:00:00 2001
+From: Bowgo Tsai <bowgotsai@google.com>
+Date: Fri, 29 Jun 2018 10:10:00 +0800
+Subject: [PATCH 07/26] Sepolicy for rw mount point for product extensions.
+
+Bug: 110808288
+Test: device boots with /mnt/product present and selinux label
+      mnt_product_file applied correctly.
+
+Change-Id: I596e4b79285fe1a79d31ad1b07f4bcffe6a6cd98
+Merged-In: I596e4b79285fe1a79d31ad1b07f4bcffe6a6cd98
+(cherry picked from commit c287032f613c00447b5ca500c099608b4fd6e933)
+---
+ prebuilts/api/28.0/private/compat/26.0/26.0.ignore.cil | 1 +
+ prebuilts/api/28.0/private/compat/27.0/27.0.ignore.cil | 1 +
+ prebuilts/api/28.0/private/file_contexts               | 6 +++++-
+ prebuilts/api/28.0/public/domain.te                    | 6 ++++++
+ prebuilts/api/28.0/public/file.te                      | 3 +++
+ prebuilts/api/28.0/public/vendor_init.te               | 2 ++
+ private/compat/26.0/26.0.ignore.cil                    | 1 +
+ private/compat/27.0/27.0.ignore.cil                    | 1 +
+ private/file_contexts                                  | 6 +++++-
+ public/domain.te                                       | 6 ++++++
+ public/file.te                                         | 3 +++
+ public/vendor_init.te                                  | 2 ++
+ 12 files changed, 36 insertions(+), 2 deletions(-)
+
+diff --git a/prebuilts/api/28.0/private/compat/26.0/26.0.ignore.cil b/prebuilts/api/28.0/private/compat/26.0/26.0.ignore.cil
+index 4e0aae22..b07350c4 100644
+--- a/prebuilts/api/28.0/private/compat/26.0/26.0.ignore.cil
++++ b/prebuilts/api/28.0/private/compat/26.0/26.0.ignore.cil
+@@ -74,6 +74,7 @@
+     mediaextractor_update_service
+     mediaprovider_tmpfs
+     metadata_file
++    mnt_product_file
+     mnt_vendor_file
+     netd_stable_secret_prop
+     network_watchlist_data_file
+diff --git a/prebuilts/api/28.0/private/compat/27.0/27.0.ignore.cil b/prebuilts/api/28.0/private/compat/27.0/27.0.ignore.cil
+index 747478cc..b3cb66a0 100644
+--- a/prebuilts/api/28.0/private/compat/27.0/27.0.ignore.cil
++++ b/prebuilts/api/28.0/private/compat/27.0/27.0.ignore.cil
+@@ -63,6 +63,7 @@
+     lowpan_service
+     mediaextractor_update_service
+     metadata_file
++    mnt_product_file
+     mnt_vendor_file
+     network_watchlist_data_file
+     network_watchlist_service
+diff --git a/prebuilts/api/28.0/private/file_contexts b/prebuilts/api/28.0/private/file_contexts
+index 564e45c2..e3b37b80 100644
+--- a/prebuilts/api/28.0/private/file_contexts
++++ b/prebuilts/api/28.0/private/file_contexts
+@@ -538,4 +538,8 @@
+ 
+ #############################
+ # mount point for read-write vendor partitions
+-/mnt/vendor(/.*)?          u:object_r:mnt_vendor_file:s0
++/mnt/vendor(/.*)?           u:object_r:mnt_vendor_file:s0
++
++#############################
++# mount point for read-write product partitions
++/mnt/product(/.*)?          u:object_r:mnt_product_file:s0
+diff --git a/prebuilts/api/28.0/public/domain.te b/prebuilts/api/28.0/public/domain.te
+index 5df0f0bd..fe03c95d 100644
+--- a/prebuilts/api/28.0/public/domain.te
++++ b/prebuilts/api/28.0/public/domain.te
+@@ -1400,3 +1400,9 @@ neverallow {
+   -vold
+   -system_writes_mnt_vendor_violators
+ } mnt_vendor_file:dir *;
++
++# Vendor domian must not have access to /mnt/product.
++neverallow {
++  domain
++  -coredomain
++} mnt_product_file:dir *;
+diff --git a/prebuilts/api/28.0/public/file.te b/prebuilts/api/28.0/public/file.te
+index ccfec152..a4051b2d 100644
+--- a/prebuilts/api/28.0/public/file.te
++++ b/prebuilts/api/28.0/public/file.te
+@@ -230,6 +230,9 @@ type storage_stub_file, file_type;
+ # Mount location for read-write vendor partitions.
+ type mnt_vendor_file, file_type;
+ 
++# Mount location for read-write product partitions.
++type mnt_product_file, file_type;
++
+ # /postinstall: Mount point used by update_engine to run postinstall.
+ type postinstall_mnt_dir, file_type;
+ # Files inside the /postinstall mountpoint are all labeled as postinstall_file.
+diff --git a/prebuilts/api/28.0/public/vendor_init.te b/prebuilts/api/28.0/public/vendor_init.te
+index 4e4b3136..740d0d9e 100644
+--- a/prebuilts/api/28.0/public/vendor_init.te
++++ b/prebuilts/api/28.0/public/vendor_init.te
+@@ -45,6 +45,7 @@ allow vendor_init {
+   -core_data_file_type
+   -exec_type
+   -system_file
++  -mnt_product_file
+   -unlabeled
+   -vendor_file_type
+   -vold_metadata_file
+@@ -85,6 +86,7 @@ allow vendor_init {
+   file_type
+   -core_data_file_type
+   -exec_type
++  -mnt_product_file
+   -system_file
+   -vendor_file_type
+   -vold_metadata_file
+diff --git a/private/compat/26.0/26.0.ignore.cil b/private/compat/26.0/26.0.ignore.cil
+index 4e0aae22..b07350c4 100644
+--- a/private/compat/26.0/26.0.ignore.cil
++++ b/private/compat/26.0/26.0.ignore.cil
+@@ -74,6 +74,7 @@
+     mediaextractor_update_service
+     mediaprovider_tmpfs
+     metadata_file
++    mnt_product_file
+     mnt_vendor_file
+     netd_stable_secret_prop
+     network_watchlist_data_file
+diff --git a/private/compat/27.0/27.0.ignore.cil b/private/compat/27.0/27.0.ignore.cil
+index 747478cc..b3cb66a0 100644
+--- a/private/compat/27.0/27.0.ignore.cil
++++ b/private/compat/27.0/27.0.ignore.cil
+@@ -63,6 +63,7 @@
+     lowpan_service
+     mediaextractor_update_service
+     metadata_file
++    mnt_product_file
+     mnt_vendor_file
+     network_watchlist_data_file
+     network_watchlist_service
+diff --git a/private/file_contexts b/private/file_contexts
+index 564e45c2..e3b37b80 100644
+--- a/private/file_contexts
++++ b/private/file_contexts
+@@ -538,4 +538,8 @@
+ 
+ #############################
+ # mount point for read-write vendor partitions
+-/mnt/vendor(/.*)?          u:object_r:mnt_vendor_file:s0
++/mnt/vendor(/.*)?           u:object_r:mnt_vendor_file:s0
++
++#############################
++# mount point for read-write product partitions
++/mnt/product(/.*)?          u:object_r:mnt_product_file:s0
+diff --git a/public/domain.te b/public/domain.te
+index 5df0f0bd..fe03c95d 100644
+--- a/public/domain.te
++++ b/public/domain.te
+@@ -1400,3 +1400,9 @@ neverallow {
+   -vold
+   -system_writes_mnt_vendor_violators
+ } mnt_vendor_file:dir *;
++
++# Vendor domian must not have access to /mnt/product.
++neverallow {
++  domain
++  -coredomain
++} mnt_product_file:dir *;
+diff --git a/public/file.te b/public/file.te
+index ccfec152..a4051b2d 100644
+--- a/public/file.te
++++ b/public/file.te
+@@ -230,6 +230,9 @@ type storage_stub_file, file_type;
+ # Mount location for read-write vendor partitions.
+ type mnt_vendor_file, file_type;
+ 
++# Mount location for read-write product partitions.
++type mnt_product_file, file_type;
++
+ # /postinstall: Mount point used by update_engine to run postinstall.
+ type postinstall_mnt_dir, file_type;
+ # Files inside the /postinstall mountpoint are all labeled as postinstall_file.
+diff --git a/public/vendor_init.te b/public/vendor_init.te
+index 4e4b3136..740d0d9e 100644
+--- a/public/vendor_init.te
++++ b/public/vendor_init.te
+@@ -45,6 +45,7 @@ allow vendor_init {
+   -core_data_file_type
+   -exec_type
+   -system_file
++  -mnt_product_file
+   -unlabeled
+   -vendor_file_type
+   -vold_metadata_file
+@@ -85,6 +86,7 @@ allow vendor_init {
+   file_type
+   -core_data_file_type
+   -exec_type
++  -mnt_product_file
+   -system_file
+   -vendor_file_type
+   -vold_metadata_file
+-- 
+2.17.1
+

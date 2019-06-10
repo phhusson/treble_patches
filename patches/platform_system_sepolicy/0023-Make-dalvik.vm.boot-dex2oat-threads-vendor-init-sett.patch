@@ -1,0 +1,43 @@
+From 79d82f6f1378a1a8d949193f034c6560614f8de5 Mon Sep 17 00:00:00 2001
+From: Tri Vo <trong@google.com>
+Date: Thu, 20 Sep 2018 11:05:09 -0700
+Subject: [PATCH 23/26] Make dalvik.vm.boot-dex2oat-threads
+ vendor-init-settable.
+
+Bug: 115741899
+Test: m selinux_policy
+Change-Id: I5d80a1d9bd5500a82ebf282fb02f0db3a0b0a4c1
+Merged-In: I5d80a1d9bd5500a82ebf282fb02f0db3a0b0a4c1
+(cherry picked from commit 260a275836ec32dd6f4a9422045b6d9d957c6af4)
+---
+ prebuilts/api/28.0/public/property_contexts | 1 +
+ public/property_contexts                    | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/prebuilts/api/28.0/public/property_contexts b/prebuilts/api/28.0/public/property_contexts
+index 4f81c1c3..f252b4a3 100644
+--- a/prebuilts/api/28.0/public/property_contexts
++++ b/prebuilts/api/28.0/public/property_contexts
+@@ -8,6 +8,7 @@ camera.disable_zsl_mode u:object_r:exported3_default_prop:s0 exact bool
+ camera.fifo.disable u:object_r:exported3_default_prop:s0 exact int
+ dalvik.vm.appimageformat u:object_r:exported_dalvik_prop:s0 exact string
+ dalvik.vm.backgroundgctype u:object_r:exported_dalvik_prop:s0 exact string
++dalvik.vm.boot-dex2oat-threads u:object_r:exported_dalvik_prop:s0 exact int
+ dalvik.vm.checkjni u:object_r:exported_dalvik_prop:s0 exact bool
+ dalvik.vm.dex2oat-Xms u:object_r:exported_dalvik_prop:s0 exact string
+ dalvik.vm.dex2oat-Xmx u:object_r:exported_dalvik_prop:s0 exact string
+diff --git a/public/property_contexts b/public/property_contexts
+index 4f81c1c3..f252b4a3 100644
+--- a/public/property_contexts
++++ b/public/property_contexts
+@@ -8,6 +8,7 @@ camera.disable_zsl_mode u:object_r:exported3_default_prop:s0 exact bool
+ camera.fifo.disable u:object_r:exported3_default_prop:s0 exact int
+ dalvik.vm.appimageformat u:object_r:exported_dalvik_prop:s0 exact string
+ dalvik.vm.backgroundgctype u:object_r:exported_dalvik_prop:s0 exact string
++dalvik.vm.boot-dex2oat-threads u:object_r:exported_dalvik_prop:s0 exact int
+ dalvik.vm.checkjni u:object_r:exported_dalvik_prop:s0 exact bool
+ dalvik.vm.dex2oat-Xms u:object_r:exported_dalvik_prop:s0 exact string
+ dalvik.vm.dex2oat-Xmx u:object_r:exported_dalvik_prop:s0 exact string
+-- 
+2.17.1
+

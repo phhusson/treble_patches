@@ -1,0 +1,296 @@
+From 7e79a3fc113558425da5e3f22c53f668f8472c69 Mon Sep 17 00:00:00 2001
+From: Tom Cherry <tomcherry@google.com>
+Date: Fri, 13 Jul 2018 15:32:02 -0700
+Subject: [PATCH] ueventd: let scripts provide firmware directories
+
+Since some vendors will have firmware in mount points in
+/mnt/vendor/..., we extend the ueventd script language to allow
+specifying the firmware directories.
+
+Also, move the existing 4 directories to ueventd.rc as a primary user
+of this mechanism.
+
+Bug: 111337229
+Test: boot sailfish; firmwares load
+Change-Id: I0854b0b786ad761e40d2332312c637610432fce2
+Merged-In: I0854b0b786ad761e40d2332312c637610432fce2
+(cherry picked from commit 7421fa1aedc975f09d3c8b6b74aca454a5d2490d)
+---
+ init/devices.h            |  1 -
+ init/firmware_handler.cpp | 10 +++-----
+ init/firmware_handler.h   |  5 ++++
+ init/ueventd.cpp          | 52 ++++++++++++++-------------------------
+ init/ueventd_parser.cpp   | 52 +++++++++++++++++++++++++++++++++++++++
+ init/ueventd_parser.h     | 24 +++++-------------
+ rootdir/ueventd.rc        |  2 ++
+ 7 files changed, 87 insertions(+), 59 deletions(-)
+
+diff --git a/init/devices.h b/init/devices.h
+index f9035da3db..9224fcd821 100644
+--- a/init/devices.h
++++ b/init/devices.h
+@@ -106,7 +106,6 @@ class DeviceHandler {
+     DeviceHandler(std::vector<Permissions> dev_permissions,
+                   std::vector<SysfsPermissions> sysfs_permissions, std::vector<Subsystem> subsystems,
+                   std::set<std::string> boot_devices, bool skip_restorecon);
+-    ~DeviceHandler(){};
+ 
+     void HandleDeviceEvent(const Uevent& uevent);
+ 
+diff --git a/init/firmware_handler.cpp b/init/firmware_handler.cpp
+index 8c8d9f2ab4..28bda34a25 100644
+--- a/init/firmware_handler.cpp
++++ b/init/firmware_handler.cpp
+@@ -21,7 +21,6 @@
+ #include <sys/wait.h>
+ #include <unistd.h>
+ 
+-#include <string>
+ #include <thread>
+ 
+ #include <android-base/chrono_utils.h>
+@@ -36,6 +35,8 @@ using android::base::WriteFully;
+ namespace android {
+ namespace init {
+ 
++std::vector<std::string> firmware_directories;
++
+ static void LoadFirmware(const Uevent& uevent, const std::string& root, int fw_fd, size_t fw_size,
+                          int loading_fd, int data_fd) {
+     // Start transfer.
+@@ -78,12 +79,9 @@ static void ProcessFirmwareEvent(const Uevent& uevent) {
+         return;
+     }
+ 
+-    static const char* firmware_dirs[] = {"/etc/firmware/", "/odm/firmware/",
+-                                          "/vendor/firmware/", "/firmware/image/"};
+-
+ try_loading_again:
+-    for (size_t i = 0; i < arraysize(firmware_dirs); i++) {
+-        std::string file = firmware_dirs[i] + uevent.firmware;
++    for (const auto& firmware_directory : firmware_directories) {
++        std::string file = firmware_directory + uevent.firmware;
+         unique_fd fw_fd(open(file.c_str(), O_RDONLY | O_CLOEXEC));
+         struct stat sb;
+         if (fw_fd != -1 && fstat(fw_fd, &sb) != -1) {
+diff --git a/init/firmware_handler.h b/init/firmware_handler.h
+index e456ac4e40..6081511b57 100644
+--- a/init/firmware_handler.h
++++ b/init/firmware_handler.h
+@@ -17,11 +17,16 @@
+ #ifndef _INIT_FIRMWARE_HANDLER_H
+ #define _INIT_FIRMWARE_HANDLER_H
+ 
++#include <string>
++#include <vector>
++
+ #include "uevent.h"
+ 
+ namespace android {
+ namespace init {
+ 
++extern std::vector<std::string> firmware_directories;
++
+ void HandleFirmwareEvent(const Uevent& uevent);
+ 
+ }  // namespace init
+diff --git a/init/ueventd.cpp b/init/ueventd.cpp
+index a284203ba1..680944546a 100644
+--- a/init/ueventd.cpp
++++ b/init/ueventd.cpp
+@@ -215,39 +215,6 @@ void ColdBoot::Run() {
+     LOG(INFO) << "Coldboot took " << cold_boot_timer.duration().count() / 1000.0f << " seconds";
+ }
+ 
+-DeviceHandler CreateDeviceHandler() {
+-    Parser parser;
+-
+-    std::vector<Subsystem> subsystems;
+-    parser.AddSectionParser("subsystem", std::make_unique<SubsystemParser>(&subsystems));
+-
+-    using namespace std::placeholders;
+-    std::vector<SysfsPermissions> sysfs_permissions;
+-    std::vector<Permissions> dev_permissions;
+-    parser.AddSingleLineParser("/sys/",
+-                               std::bind(ParsePermissionsLine, _1, &sysfs_permissions, nullptr));
+-    parser.AddSingleLineParser("/dev/",
+-                               std::bind(ParsePermissionsLine, _1, nullptr, &dev_permissions));
+-
+-    parser.ParseConfig("/ueventd.rc");
+-    parser.ParseConfig("/vendor/ueventd.rc");
+-    parser.ParseConfig("/odm/ueventd.rc");
+-
+-    /*
+-     * keep the current product name base configuration so
+-     * we remain backwards compatible and allow it to override
+-     * everything
+-     * TODO: cleanup platform ueventd.rc to remove vendor specific
+-     * device node entries (b/34968103)
+-     */
+-    std::string hardware = android::base::GetProperty("ro.hardware", "");
+-    parser.ParseConfig("/ueventd." + hardware + ".rc");
+-
+-    auto boot_devices = fs_mgr_get_boot_devices();
+-    return DeviceHandler(std::move(dev_permissions), std::move(sysfs_permissions),
+-                         std::move(subsystems), std::move(boot_devices), true);
+-}
+-
+ int ueventd_main(int argc, char** argv) {
+     /*
+      * init sets the umask to 077 for forked processes. We need to
+@@ -263,9 +230,26 @@ int ueventd_main(int argc, char** argv) {
+     SelinuxSetupKernelLogging();
+     SelabelInitialize();
+ 
+-    DeviceHandler device_handler = CreateDeviceHandler();
++    DeviceHandler device_handler;
+     UeventListener uevent_listener;
+ 
++    {
++        // Keep the current product name base configuration so we remain backwards compatible and
++        // allow it to override everything.
++        // TODO: cleanup platform ueventd.rc to remove vendor specific device node entries (b/34968103)
++        auto hardware = android::base::GetProperty("ro.hardware", "");
++
++        auto ueventd_configuration =
++                ParseConfig({"/ueventd.rc", "/vendor/ueventd.rc", "/odm/ueventd.rc", hardware});
++
++        device_handler = DeviceHandler{std::move(ueventd_configuration.dev_permissions),
++                                       std::move(ueventd_configuration.sysfs_permissions),
++                                       std::move(ueventd_configuration.subsystems),
++                                       fs_mgr_get_boot_devices(), true};
++
++        firmware_directories = ueventd_configuration.firmware_directories;
++    }
++
+     if (access(COLDBOOT_DONE, F_OK) != 0) {
+         ColdBoot cold_boot(uevent_listener, device_handler);
+         cold_boot.Run();
+diff --git a/init/ueventd_parser.cpp b/init/ueventd_parser.cpp
+index f74c878495..c114ec7041 100644
+--- a/init/ueventd_parser.cpp
++++ b/init/ueventd_parser.cpp
+@@ -20,6 +20,7 @@
+ #include <pwd.h>
+ 
+ #include "keyword_map.h"
++#include "parser.h"
+ 
+ namespace android {
+ namespace init {
+@@ -72,6 +73,33 @@ Result<Success> ParsePermissionsLine(std::vector<std::string>&& args,
+     return Success();
+ }
+ 
++Result<Success> ParseFirmwareDirectoriesLine(std::vector<std::string>&& args,
++                                             std::vector<std::string>* firmware_directories) {
++    if (args.size() < 2) {
++        return Error() << "firmware_directories must have at least 1 entry";
++    }
++
++    std::move(std::next(args.begin()), args.end(), std::back_inserter(*firmware_directories));
++
++    return Success();
++}
++
++class SubsystemParser : public SectionParser {
++  public:
++    SubsystemParser(std::vector<Subsystem>* subsystems) : subsystems_(subsystems) {}
++    Result<Success> ParseSection(std::vector<std::string>&& args, const std::string& filename,
++                                 int line) override;
++    Result<Success> ParseLineSection(std::vector<std::string>&& args, int line) override;
++    Result<Success> EndSection() override;
++
++  private:
++    Result<Success> ParseDevName(std::vector<std::string>&& args);
++    Result<Success> ParseDirName(std::vector<std::string>&& args);
++
++    Subsystem subsystem_;
++    std::vector<Subsystem>* subsystems_;
++};
++
+ Result<Success> SubsystemParser::ParseSection(std::vector<std::string>&& args,
+                                               const std::string& filename, int line) {
+     if (args.size() != 2) {
+@@ -138,5 +166,29 @@ Result<Success> SubsystemParser::EndSection() {
+     return Success();
+ }
+ 
++UeventdConfiguration ParseConfig(const std::vector<std::string>& configs) {
++    Parser parser;
++    UeventdConfiguration ueventd_configuration;
++
++    parser.AddSectionParser("subsystem",
++                            std::make_unique<SubsystemParser>(&ueventd_configuration.subsystems));
++
++    using namespace std::placeholders;
++    parser.AddSingleLineParser(
++            "/sys/",
++            std::bind(ParsePermissionsLine, _1, &ueventd_configuration.sysfs_permissions, nullptr));
++    parser.AddSingleLineParser("/dev/", std::bind(ParsePermissionsLine, _1, nullptr,
++                                                  &ueventd_configuration.dev_permissions));
++    parser.AddSingleLineParser("firmware_directories",
++                               std::bind(ParseFirmwareDirectoriesLine, _1,
++                                         &ueventd_configuration.firmware_directories));
++
++    for (const auto& config : configs) {
++        parser.ParseConfig(config);
++    }
++
++    return ueventd_configuration;
++}
++
+ }  // namespace init
+ }  // namespace android
+diff --git a/init/ueventd_parser.h b/init/ueventd_parser.h
+index 83684f39e5..343d58bfd6 100644
+--- a/init/ueventd_parser.h
++++ b/init/ueventd_parser.h
+@@ -21,30 +21,18 @@
+ #include <vector>
+ 
+ #include "devices.h"
+-#include "parser.h"
+ 
+ namespace android {
+ namespace init {
+ 
+-class SubsystemParser : public SectionParser {
+-  public:
+-    SubsystemParser(std::vector<Subsystem>* subsystems) : subsystems_(subsystems) {}
+-    Result<Success> ParseSection(std::vector<std::string>&& args, const std::string& filename,
+-                                 int line) override;
+-    Result<Success> ParseLineSection(std::vector<std::string>&& args, int line) override;
+-    Result<Success> EndSection() override;
+-
+-  private:
+-    Result<Success> ParseDevName(std::vector<std::string>&& args);
+-    Result<Success> ParseDirName(std::vector<std::string>&& args);
+-
+-    Subsystem subsystem_;
+-    std::vector<Subsystem>* subsystems_;
++struct UeventdConfiguration {
++    std::vector<Subsystem> subsystems;
++    std::vector<SysfsPermissions> sysfs_permissions;
++    std::vector<Permissions> dev_permissions;
++    std::vector<std::string> firmware_directories;
+ };
+ 
+-Result<Success> ParsePermissionsLine(std::vector<std::string>&& args,
+-                                     std::vector<SysfsPermissions>* out_sysfs_permissions,
+-                                     std::vector<Permissions>* out_dev_permissions);
++UeventdConfiguration ParseConfig(const std::vector<std::string>& configs);
+ 
+ }  // namespace init
+ }  // namespace android
+diff --git a/rootdir/ueventd.rc b/rootdir/ueventd.rc
+index b03d83bf1b..2f85dec071 100644
+--- a/rootdir/ueventd.rc
++++ b/rootdir/ueventd.rc
+@@ -1,3 +1,5 @@
++firmware_directories /etc/firmware/ /odm/firmware/ /vendor/firmware/ /firmware/image/
++
+ subsystem adf
+     devname uevent_devname
+ 
+

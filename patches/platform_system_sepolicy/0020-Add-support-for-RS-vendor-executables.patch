@@ -1,0 +1,57 @@
+From 8b3653185023b221b3a4184746999ae7ec4a5070 Mon Sep 17 00:00:00 2001
+From: Tri Vo <trong@google.com>
+Date: Mon, 6 Aug 2018 16:25:36 -0700
+Subject: [PATCH 20/26] Add support for RS vendor executables.
+
+/vendor/bin/bcc being a dependency of renderscript should be labeled as
+same_process_hal_file. To facilitate that we relax neverallow rules for
+executing same_process_hal_file from coredomain.
+
+See details on /vendor/bin/bcc:
+https://source.android.com/devices/architecture/vndk/renderscript
+
+Bug: n/a
+Test: build-time change
+Change-Id: Ie996fb863090bf08b3d3ef653da827d0b22937d7
+Merged-In: Ie996fb863090bf08b3d3ef653da827d0b22937d7
+(cherry picked from commit dd253e9019ec3ab4700550cf2491aa1cbdc4e8c9)
+---
+ prebuilts/api/28.0/public/domain.te | 5 ++++-
+ public/domain.te                    | 5 ++++-
+ 2 files changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/prebuilts/api/28.0/public/domain.te b/prebuilts/api/28.0/public/domain.te
+index 26ce1a00..14f2f767 100644
+--- a/prebuilts/api/28.0/public/domain.te
++++ b/prebuilts/api/28.0/public/domain.te
+@@ -1033,7 +1033,10 @@ full_treble_only(`
+       coredomain
+       -shell
+       -system_executes_vendor_violators
+-    } vendor_file_type:file execute_no_trans;
++    } {
++      vendor_file_type
++      -same_process_hal_file
++    }:file execute_no_trans;
+ ')
+ 
+ # Only authorized processes should be writing to files in /data/dalvik-cache
+diff --git a/public/domain.te b/public/domain.te
+index 26ce1a00..14f2f767 100644
+--- a/public/domain.te
++++ b/public/domain.te
+@@ -1033,7 +1033,10 @@ full_treble_only(`
+       coredomain
+       -shell
+       -system_executes_vendor_violators
+-    } vendor_file_type:file execute_no_trans;
++    } {
++      vendor_file_type
++      -same_process_hal_file
++    }:file execute_no_trans;
+ ')
+ 
+ # Only authorized processes should be writing to files in /data/dalvik-cache
+-- 
+2.17.1
+
